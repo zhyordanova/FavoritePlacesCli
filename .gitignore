@@ -23,6 +23,7 @@ pnpm-debug.log*
 # Android
 android/.gradle/
 android/app/build/
+android/app/.cxx/
 android/build/
 android/local.properties
 *.keystore

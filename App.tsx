@@ -1,45 +1,70 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useEffect, useState } from 'react';
+import { StatusBar } from 'react-native';
+import { init } from './src/util/database';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import AllPlaces from './src/screens/AllPlaces';
+import AddPlace from './src/screens/AddPlace';
+import Map from './src/screens/Map';
+import PlaceDetails from './src/screens/PlaceDetails';
+import IconButton from './src/components/UI/IconButton';
+import { Colors } from './src/constants/colors';
+import { RootStackParamList } from './src/types/navigation';
 
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
+const stackScreenOptions = {
+  headerStyle: { backgroundColor: Colors.primary500 },
+  headerTintColor: Colors.gray700,
+  contentStyle: { backgroundColor: Colors.primary50 },
+};
+
+export default function App() {
+  const [dbInitialized, setDbInitialized] = useState(false);
+
+  useEffect(() => {
+    Promise.all([Ionicons.loadFont(), init()]).then(() =>
+      setDbInitialized(true),
+    );
+  }, []);
+
+  if (!dbInitialized) return null;
 
   return (
-    <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
-    </SafeAreaProvider>
+    <>
+      <StatusBar />
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={stackScreenOptions}>
+          <Stack.Screen
+            name="AllPlaces"
+            component={AllPlaces}
+            options={({ navigation }) => ({
+              title: 'All Places',
+              headerRight: ({ tintColor }) => (
+                <IconButton
+                  icon="add-outline"
+                  size={24}
+                  color={tintColor}
+                  onClick={() => navigation.navigate('AddPlace')}
+                />
+              ),
+            })}
+          />
+          <Stack.Screen
+            name="AddPlace"
+            component={AddPlace}
+            options={{ title: 'Add a new place' }}
+          />
+          <Stack.Screen name="Map" component={Map} options={{ title: 'Map' }} />
+          <Stack.Screen
+            name="PlaceDetails"
+            component={PlaceDetails}
+            options={{ title: 'Loading Place' }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </>
   );
 }
-
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
-
-  return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
-
-export default App;
