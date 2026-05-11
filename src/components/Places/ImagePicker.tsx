@@ -4,7 +4,16 @@ import {
   launchCamera,
   launchImageLibrary,
 } from 'react-native-image-picker';
-import { Alert, Image, StyleSheet, Text, View } from 'react-native';
+import {
+  Alert,
+  Image,
+  Linking,
+  PermissionsAndroid,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 import OutlinedButton from '../UI/OutlinedButton';
 import { Colors } from '../../constants/colors';
@@ -19,6 +28,26 @@ export default function ImagePicker({
   onTakeImage,
   selectedImage,
 }: ImagePickerProps) {
+  function showPermissionSettingsAlert(resource: 'camera' | 'gallery'): void {
+    const resourceLabel = resource === 'camera' ? 'camera' : 'photo library';
+
+    Alert.alert(
+      'Permission Required',
+      `Please enable ${resourceLabel} access in Settings to continue.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Open Settings',
+          onPress: () => {
+            Linking.openSettings().catch(() => {
+              Alert.alert('Error', 'Could not open app settings.');
+            });
+          },
+        },
+      ],
+    );
+  }
+
   async function processImageResult(
     image: ImagePickerResponse,
     saveToLibrary: boolean,
@@ -51,10 +80,59 @@ export default function ImagePicker({
     }
   }
 
+  async function verifyCameraPermissions(): Promise<boolean> {
+    if (Platform.OS !== 'android') {
+      return true;
+    }
+
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.CAMERA,
+      {
+        title: 'Camera Permission Required',
+        message: 'You need to allow camera access to take a photo.',
+        buttonPositive: 'Allow',
+        buttonNegative: 'Deny',
+      },
+    );
+
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      return true;
+    }
+
+    if (granted === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
+      showPermissionSettingsAlert('camera');
+      return false;
+    }
+
+    Alert.alert(
+      'Insufficient Permissions!',
+      'You need to grant camera permissions to use this app.',
+    );
+    return false;
+  }
+
   async function takeImageHandler(): Promise<void> {
+    const hasPermission = await verifyCameraPermissions();
+    if (!hasPermission) {
+      return;
+    }
+
     const image = await launchCamera(CAMERA_OPTIONS);
 
     if (image.errorCode) {
+      if (image.errorCode === 'permission') {
+        showPermissionSettingsAlert('camera');
+        return;
+      }
+
+      if (image.errorCode === 'camera_unavailable') {
+        Alert.alert(
+          'Camera Unavailable',
+          'Camera is not available on this device. On iOS Simulator, use Pick from Gallery or run the app on a physical iPhone.',
+        );
+        return;
+      }
+
       Alert.alert(
         'Camera Error',
         image.errorMessage ?? 'Could not open camera.',
@@ -69,6 +147,11 @@ export default function ImagePicker({
     const image = await launchImageLibrary(CAMERA_OPTIONS);
 
     if (image.errorCode) {
+      if (image.errorCode === 'permission') {
+        showPermissionSettingsAlert('gallery');
+        return;
+      }
+
       Alert.alert(
         'Gallery Error',
         image.errorMessage ?? 'Could not open gallery.',

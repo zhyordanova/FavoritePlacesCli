@@ -5,6 +5,7 @@ import Geolocation from 'react-native-geolocation-service';
 import {
   Alert,
   Image,
+  Linking,
   PermissionsAndroid,
   Platform,
   StyleSheet,
@@ -30,6 +31,24 @@ export default function LocationPicker({
 }: LocationPickerProps) {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  function showPermissionSettingsAlert(): void {
+    Alert.alert(
+      'Permission Required',
+      'Please enable location access in Settings to continue.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Open Settings',
+          onPress: () => {
+            Linking.openSettings().catch(() => {
+              Alert.alert('Error', 'Could not open app settings.');
+            });
+          },
+        },
+      ],
+    );
+  }
 
   useFocusEffect(
     useCallback(() => {
@@ -69,25 +88,33 @@ export default function LocationPicker({
         return true;
       }
 
-      Alert.alert(
-        'Insufficient Permissions!',
-        'You need to grant location permissions to use this app.',
-      );
+      showPermissionSettingsAlert();
       return false;
     }
 
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      {
-        title: 'Location Permission',
-        message: 'This app needs access to your location.',
-        buttonNeutral: 'Ask Me Later',
-        buttonNegative: 'Cancel',
-        buttonPositive: 'OK',
-      },
-    );
+    const finePermission = PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION;
+    const coarsePermission =
+      PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION;
 
-    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+    const alreadyHasFine = await PermissionsAndroid.check(finePermission);
+    const alreadyHasCoarse = await PermissionsAndroid.check(coarsePermission);
+
+    if (alreadyHasFine || alreadyHasCoarse) {
+      return true;
+    }
+
+    const granted = await PermissionsAndroid.requestMultiple([
+      finePermission,
+      coarsePermission,
+    ]);
+
+    const fineResult = granted[finePermission];
+    const coarseResult = granted[coarsePermission];
+
+    if (
+      fineResult === PermissionsAndroid.RESULTS.GRANTED ||
+      coarseResult === PermissionsAndroid.RESULTS.GRANTED
+    ) {
       return true;
     }
 
@@ -105,6 +132,33 @@ export default function LocationPicker({
       return;
     }
 
+    const hasFineOnAndroid =
+      Platform.OS === 'android'
+        ? await PermissionsAndroid.check(
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          )
+        : true;
+
+    if (Platform.OS === 'android' && !hasFineOnAndroid) {
+      Alert.alert(
+        'Approximate Location Active',
+        'Your device is currently sharing approximate location. Use Pick on Map, or enable Precise Location in Settings for Locate User.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Pick on Map', onPress: pickOnMapHandler },
+          {
+            text: 'Open Settings',
+            onPress: () => {
+              Linking.openSettings().catch(() => {
+                Alert.alert('Error', 'Could not open app settings.');
+              });
+            },
+          },
+        ],
+      );
+      return;
+    }
+
     let location: { latitude: number; longitude: number };
 
     try {
@@ -115,7 +169,7 @@ export default function LocationPicker({
           },
           reject,
           {
-            enableHighAccuracy: true,
+            enableHighAccuracy: hasFineOnAndroid,
             timeout: 15000,
             maximumAge: 10000,
           },

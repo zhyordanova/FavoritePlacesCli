@@ -33,6 +33,7 @@ android/local.properties
 ios/Pods/
 ios/build/
 ios/DerivedData/
+ios/tmp.xcconfig
 *.xcworkspace
 !ios/*.xcworkspace/contents.xcworkspacedata
 *.xcuserstate
