@@ -7,7 +7,6 @@ import {
 import {
   Alert,
   Image,
-  Linking,
   PermissionsAndroid,
   Platform,
   StyleSheet,
@@ -16,8 +15,9 @@ import {
 } from 'react-native';
 
 import OutlinedButton from '../UI/OutlinedButton';
-import { Colors } from '../../constants/colors';
+import { sharedPickerStyles } from '../../constants/sharedStyles';
 import { CAMERA_OPTIONS } from '../../constants/imagePicker';
+import { showOpenSettingsAlert } from '../../util/permissions';
 
 interface ImagePickerProps {
   onTakeImage: (uri: string) => void;
@@ -28,26 +28,6 @@ export default function ImagePicker({
   onTakeImage,
   selectedImage,
 }: ImagePickerProps) {
-  function showPermissionSettingsAlert(resource: 'camera' | 'gallery'): void {
-    const resourceLabel = resource === 'camera' ? 'camera' : 'photo library';
-
-    Alert.alert(
-      'Permission Required',
-      `Please enable ${resourceLabel} access in Settings to continue.`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Open Settings',
-          onPress: () => {
-            Linking.openSettings().catch(() => {
-              Alert.alert('Error', 'Could not open app settings.');
-            });
-          },
-        },
-      ],
-    );
-  }
-
   async function processImageResult(
     image: ImagePickerResponse,
     saveToLibrary: boolean,
@@ -100,14 +80,11 @@ export default function ImagePicker({
     }
 
     if (granted === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
-      showPermissionSettingsAlert('camera');
+      showOpenSettingsAlert('Please enable camera access in Settings to continue.');
       return false;
     }
 
-    Alert.alert(
-      'Insufficient Permissions!',
-      'You need to grant camera permissions to use this app.',
-    );
+    showOpenSettingsAlert('Please enable camera access in Settings to continue.');
     return false;
   }
 
@@ -121,7 +98,7 @@ export default function ImagePicker({
 
     if (image.errorCode) {
       if (image.errorCode === 'permission') {
-        showPermissionSettingsAlert('camera');
+        showOpenSettingsAlert('Please enable camera access in Settings to continue.');
         return;
       }
 
@@ -148,7 +125,7 @@ export default function ImagePicker({
 
     if (image.errorCode) {
       if (image.errorCode === 'permission') {
-        showPermissionSettingsAlert('gallery');
+        showOpenSettingsAlert('Please enable photo library access in Settings to continue.');
         return;
       }
 
@@ -172,8 +149,8 @@ export default function ImagePicker({
 
   return (
     <View>
-      <View style={styles.imagePreview}>{imagePreview}</View>
-      <View style={styles.actions}>
+      <View style={sharedPickerStyles.preview}>{imagePreview}</View>
+      <View style={sharedPickerStyles.actions}>
         <OutlinedButton icon="camera-outline" onPress={takeImageHandler}>
           Take Image
         </OutlinedButton>
@@ -187,27 +164,8 @@ export default function ImagePicker({
 }
 
 const styles = StyleSheet.create({
-  imagePreview: {
-    height: 200,
-    marginVertical: 12,
-    marginHorizontal: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 4,
-    overflow: 'hidden',
-    backgroundColor: Colors.primary100,
-    borderColor: Colors.primary500,
-    borderWidth: 2,
-  },
-
   image: {
     width: '100%',
     height: '100%',
-  },
-
-  actions: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
   },
 });

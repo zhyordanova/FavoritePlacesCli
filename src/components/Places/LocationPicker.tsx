@@ -1,11 +1,10 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import Geolocation from 'react-native-geolocation-service';
 import {
   Alert,
   Image,
-  Linking,
   PermissionsAndroid,
   Platform,
   StyleSheet,
@@ -14,10 +13,11 @@ import {
 } from 'react-native';
 
 import OutlinedButton from '../UI/OutlinedButton';
-import { Colors } from '../../constants/colors';
+import { sharedPickerStyles } from '../../constants/sharedStyles';
 import { consumePickedMapLocation } from '../../store/picked-location-store';
 import { Location } from '../../types';
 import { getAddress, getMapPreview } from '../../util/location';
+import { openAppSettings, showOpenSettingsAlert } from '../../util/permissions';
 import { RootStackParamList } from '../../types/navigation';
 
 interface LocationPickerProps {
@@ -31,24 +31,7 @@ export default function LocationPicker({
 }: LocationPickerProps) {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
-  function showPermissionSettingsAlert(): void {
-    Alert.alert(
-      'Permission Required',
-      'Please enable location access in Settings to continue.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Open Settings',
-          onPress: () => {
-            Linking.openSettings().catch(() => {
-              Alert.alert('Error', 'Could not open app settings.');
-            });
-          },
-        },
-      ],
-    );
-  }
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -88,7 +71,9 @@ export default function LocationPicker({
         return true;
       }
 
-      showPermissionSettingsAlert();
+      showOpenSettingsAlert(
+        'Please enable location access in Settings to continue.',
+      );
       return false;
     }
 
@@ -118,89 +103,86 @@ export default function LocationPicker({
       return true;
     }
 
-    Alert.alert(
-      'Insufficient Permissions!',
-      'You need to grant location permissions to use this app.',
+    showOpenSettingsAlert(
+      'Please enable location access in Settings to continue.',
     );
     return false;
   }
 
   async function getLocationHandler(): Promise<void> {
-    const hasPermission = await verifiedPermissions();
-
-    if (!hasPermission) {
-      return;
-    }
-
-    const hasFineOnAndroid =
-      Platform.OS === 'android'
-        ? await PermissionsAndroid.check(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-          )
-        : true;
-
-    if (Platform.OS === 'android' && !hasFineOnAndroid) {
-      Alert.alert(
-        'Approximate Location Active',
-        'Your device is currently sharing approximate location. Use Pick on Map, or enable Precise Location in Settings for Locate User.',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Pick on Map', onPress: pickOnMapHandler },
-          {
-            text: 'Open Settings',
-            onPress: () => {
-              Linking.openSettings().catch(() => {
-                Alert.alert('Error', 'Could not open app settings.');
-              });
-            },
-          },
-        ],
-      );
-      return;
-    }
-
-    let location: { latitude: number; longitude: number };
-
+    setIsLoadingLocation(true);
     try {
-      location = await new Promise((resolve, reject) => {
-        Geolocation.getCurrentPosition(
-          position => {
-            resolve(position.coords);
-          },
-          reject,
-          {
-            enableHighAccuracy: hasFineOnAndroid,
-            timeout: 15000,
-            maximumAge: 10000,
-          },
+      const hasPermission = await verifiedPermissions();
+
+      if (!hasPermission) {
+        return;
+      }
+
+      const hasFineOnAndroid =
+        Platform.OS === 'android'
+          ? await PermissionsAndroid.check(
+              PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+            )
+          : true;
+
+      if (Platform.OS === 'android' && !hasFineOnAndroid) {
+        Alert.alert(
+          'Approximate Location Active',
+          'Your device is currently sharing approximate location. Use Pick on Map, or enable Precise Location in Settings for Locate User.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Pick on Map', onPress: pickOnMapHandler },
+            { text: 'Open Settings', onPress: openAppSettings },
+          ],
         );
-      });
-    } catch {
-      Alert.alert(
-        'Location Unavailable',
-        'Could not fetch your location. Make sure location services are enabled on your device.',
-      );
-      return;
+        return;
+      }
+
+      let location: { latitude: number; longitude: number };
+
+      try {
+        location = await new Promise((resolve, reject) => {
+          Geolocation.getCurrentPosition(
+            position => {
+              resolve(position.coords);
+            },
+            reject,
+            {
+              enableHighAccuracy: hasFineOnAndroid,
+              timeout: 15000,
+              maximumAge: 10000,
+            },
+          );
+        });
+      } catch {
+        Alert.alert(
+          'Location Unavailable',
+          'Could not fetch your location. Make sure location services are enabled on your device.',
+        );
+        return;
+      }
+
+      const currentLocation = {
+        lat: location.latitude,
+        lng: location.longitude,
+      };
+
+      let address: string;
+
+      try {
+        address = await getAddress(currentLocation.lat, currentLocation.lng);
+      } catch {
+        Alert.alert(
+          'Geocoding Failed',
+          'Could not retrieve the address for your location.',
+        );
+        return;
+      }
+
+      onPickLocation({ ...currentLocation, address });
+    } finally {
+      setIsLoadingLocation(false);
     }
-
-    const currentLocation = {
-      lat: location.latitude,
-      lng: location.longitude,
-    };
-
-    let address: string;
-    
-    try {
-      address = await getAddress(currentLocation.lat, currentLocation.lng);
-    } catch {
-      Alert.alert(
-        'Geocoding Failed',
-        'Could not retrieve the address for your location.',
-      );
-      return;
-    }
-
-    onPickLocation({ ...currentLocation, address });
   }
 
   function pickOnMapHandler(): void {
@@ -209,7 +191,9 @@ export default function LocationPicker({
 
   let locationPreview = <Text>No location picked yet.</Text>;
 
-  if (pickedLocation) {
+  if (isLoadingLocation) {
+    locationPreview = <Text>Loading location...</Text>;
+  } else if (pickedLocation) {
     locationPreview = (
       <Image
         style={styles.mapImage}
@@ -222,9 +206,13 @@ export default function LocationPicker({
 
   return (
     <View>
-      <View style={styles.mapPreview}>{locationPreview}</View>
-      <View style={styles.actions}>
-        <OutlinedButton icon="location-outline" onPress={getLocationHandler}>
+      <View style={sharedPickerStyles.preview}>{locationPreview}</View>
+      <View style={sharedPickerStyles.actions}>
+        <OutlinedButton
+          icon="location-outline"
+          onPress={getLocationHandler}
+          disabled={isLoadingLocation}
+        >
           Locate User
         </OutlinedButton>
 
@@ -237,25 +225,6 @@ export default function LocationPicker({
 }
 
 const styles = StyleSheet.create({
-  mapPreview: {
-    height: 200,
-    marginVertical: 12,
-    marginHorizontal: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 4,
-    overflow: 'hidden',
-    backgroundColor: Colors.primary100,
-    borderColor: Colors.primary500,
-    borderWidth: 2,
-  },
-
-  actions: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-  },
-
   mapImage: {
     width: '100%',
     height: '100%',

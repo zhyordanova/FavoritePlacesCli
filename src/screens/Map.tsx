@@ -9,7 +9,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  Image,
   Platform,
   StyleSheet,
   View,
@@ -20,6 +19,7 @@ import Config from "react-native-config";
 import { RootStackParamList } from "../types/navigation";
 
 import IconButton from "../components/UI/IconButton";
+import LocationMarker from "../components/UI/LocationMarker";
 import MarkerGenerator from "../components/UI/MarkerGenerator";
 import { useMarkerImage } from "../hooks/useMarkerImage";
 import { setPickedMapLocation } from "../store/picked-location-store";
@@ -43,7 +43,9 @@ export default function Map() {
   const [imageUri, setImageUri] = useState<string | undefined>();
   const [markerCaptureFailed, setMarkerCaptureFailed] = useState(false);
   const [isMapMounted, setIsMapMounted] = useState(Platform.OS !== "android");
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
   const mountDelayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const loadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!placeId) return;
@@ -130,9 +132,27 @@ export default function Map() {
         }
 
         setIsMapMounted(false);
+        setIsMapLoaded(false);
       };
     }, []),
   );
+
+  useEffect(() => {
+    if (!isMapMounted) return;
+
+    // Fallback: show map after max 2s even if onDidFinishLoadingMap doesn't fire
+    loadTimeoutRef.current = setTimeout(() => {
+      setIsMapLoaded(true);
+      loadTimeoutRef.current = null;
+    }, 2000);
+
+    return () => {
+      if (loadTimeoutRef.current) {
+        clearTimeout(loadTimeoutRef.current);
+        loadTimeoutRef.current = null;
+      }
+    };
+  }, [isMapMounted]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -161,45 +181,41 @@ export default function Map() {
       )}
 
       {isMapMounted ? (
-        <Mapbox.MapView
-          style={styles.map}
-          styleURL={Mapbox.StyleURL.Street}
-          surfaceView={false}
-          onPress={selectLocationHandler}
-        >
-          <Mapbox.Camera
-            defaultSettings={{
-              centerCoordinate: initialCoordinate,
-              zoomLevel: 14,
+        <>
+          <Mapbox.MapView
+            style={styles.map}
+            styleURL={Mapbox.StyleURL.Street}
+            surfaceView={false}
+            onPress={selectLocationHandler}
+            onDidFinishLoadingMap={() => {
+              setIsMapLoaded(true);
+              if (loadTimeoutRef.current) {
+                clearTimeout(loadTimeoutRef.current);
+                loadTimeoutRef.current = null;
+              }
             }}
-          />
+          >
+            <Mapbox.Camera
+              defaultSettings={{
+                centerCoordinate: initialCoordinate,
+                zoomLevel: 14,
+              }}
+            />
 
-          {shouldRenderMarker && markerImage && selectedCoordinate && (
-            <Mapbox.MarkerView
-              coordinate={selectedCoordinate}
-              anchor={{ x: 0.5, y: 1 }}
-              allowOverlap
-            >
-              <Image source={{ uri: markerImage }} style={styles.markerImage} />
-            </Mapbox.MarkerView>
-          )}
+            {shouldRenderMarker && selectedCoordinate && (
+              <LocationMarker
+                coordinate={selectedCoordinate}
+                imageUri={markerImage ?? undefined}
+              />
+            )}
+          </Mapbox.MapView>
 
-          {shouldRenderMarker && !markerImage && selectedCoordinate && (
-            <Mapbox.MarkerView
-              id="selected-location-fallback"
-              coordinate={selectedCoordinate}
-              anchor={{ x: 0.5, y: 1 }}
-              allowOverlap
-            >
-              <View style={styles.fallbackMarkerContainer}>
-                <View style={styles.fallbackMarkerHead}>
-                  <View style={styles.fallbackMarkerCenter} />
-                </View>
-                <View style={styles.fallbackMarkerTip} />
-              </View>
-            </Mapbox.MarkerView>
+          {!isMapLoaded && (
+            <View style={[styles.mapLoadingContainer, StyleSheet.absoluteFill]}>
+              <ActivityIndicator size="large" color="#1c7ed6" />
+            </View>
           )}
-        </Mapbox.MapView>
+        </>
       ) : (
         <View style={styles.mapLoadingContainer}>
           <ActivityIndicator size="large" color="#1c7ed6" />
@@ -219,46 +235,4 @@ const styles = StyleSheet.create({
     backgroundColor: "#dff3fb",
   },
 
-  markerImage: {
-    width: 84,
-    height: 96,
-    resizeMode: "contain",
-  },
-
-  fallbackMarkerContainer: {
-    alignItems: "center",
-  },
-
-  fallbackMarkerHead: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    backgroundColor: "#E53935",
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.22,
-    shadowRadius: 3,
-    shadowOffset: { width: 0, height: 1 },
-    elevation: 3,
-  },
-
-  fallbackMarkerCenter: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "#fff",
-  },
-
-  fallbackMarkerTip: {
-    width: 0,
-    height: 0,
-    borderLeftWidth: 6,
-    borderRightWidth: 6,
-    borderTopWidth: 8,
-    borderLeftColor: "transparent",
-    borderRightColor: "transparent",
-    borderTopColor: "#E53935",
-    marginTop: -2,
-  },
 });
