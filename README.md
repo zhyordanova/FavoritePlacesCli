@@ -1,97 +1,237 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# FavouritePlacesCli
 
-# Getting Started
+A React Native CLI app for iOS and Android that lets users save favourite places with a photo, a resolved address, and map coordinates.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+Users can:
+- take or choose a photo
+- use current GPS location or pick a place on the map
+- reverse-geocode coordinates into a readable address
+- save places locally with SQLite
+- open saved places and view them on a map
 
-## Step 1: Start Metro
+## Features
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+- React Native CLI project for **Android** and **iOS**
+- Built with **TypeScript**
+- Local persistence using **SQLite**
+- Map selection and preview using **Mapbox**
+- Device location support
+- Camera and gallery image selection
+- Native navigation with stack screens
+- Offline storage for saved places
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## Tech Stack
 
-```sh
-# Using npm
-npm start
+- **React Native**
+- **TypeScript**
+- **React Navigation**
+- **Mapbox** via `@rnmapbox/maps`
+- **SQLite** via `@op-engineering/op-sqlite`
+- **react-native-image-picker**
+- **react-native-geolocation-service**
+- **react-native-config**
+- **react-native-vector-icons**
 
-# OR using Yarn
-yarn start
+## Project Structure
+
+```text
+src/
+  components/
+    Places/
+    UI/
+  constants/
+  hooks/
+  models/
+  screens/
+  store/
+  types/
+  util/
 ```
 
-## Step 2: Build and run your app
+## Screens / Flow
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+### All Places
+Displays all saved places from the local SQLite database.
 
-### Android
+### Add Place
+Allows the user to:
+- enter a title
+- take a photo or pick one from the gallery
+- use current location or select one on the map
 
-```sh
-# Using npm
-npm run android
+### Map
+Used for:
+- picking a location when creating a place
+- viewing a saved place on the map
 
-# OR using Yarn
-yarn android
+### Place Details
+Shows:
+- place image
+- resolved address
+- option to open the location on the map
+
+## Requirements
+
+Before running the app, make sure you have:
+
+- Node.js
+- npm
+- React Native development environment set up
+- Android Studio for Android
+- Xcode + CocoaPods for iOS
+- a valid **Mapbox access token**
+
+Official React Native environment setup guide:  
+https://reactnative.dev/docs/set-up-your-environment
+
+## Environment Variables
+
+This project requires a Mapbox token.
+
+Create a `.env` file in the project root:
+
+```env
+MAPBOX_ACCESS_TOKEN=your_mapbox_access_token_here
 ```
 
-### iOS
+## Installation
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+Install dependencies:
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+```sh
+npm install
+```
+
+### iOS only
+
+Install Ruby gems if needed:
 
 ```sh
 bundle install
 ```
 
-Then, and every time you update your native dependencies, run:
+Install CocoaPods dependencies:
 
 ```sh
 bundle exec pod install
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+## Running the App
+
+Start Metro:
 
 ```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
+npm start
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+### Run on Android
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+```sh
+npm run android
+```
 
-## Step 3: Modify your app
+### Run on iOS
 
-Now that you have successfully run the app, let's make changes!
+```sh
+npm run ios
+```
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+## Permissions
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+This app uses native device features and may request permissions for:
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+- **Location**
+- **Camera**
+- **Photo Library / Gallery**
 
-## Congratulations! :tada:
+### Android
+Depending on device version and settings, the app may request:
+- camera permission
+- fine location
+- coarse location
 
-You've successfully run and modified your React Native App. :partying_face:
+### iOS
+The app may request:
+- when-in-use location permission
+- camera access
+- photo library access
 
-### Now what?
+If permission is denied permanently, the app may prompt the user to open system settings.
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+## Data Storage
 
-# Troubleshooting
+Saved places are stored locally in SQLite.
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+Each place includes:
+- `id`
+- `title`
+- `imageUri`
+- `address`
+- `lat`
+- `lng`
 
-# Learn More
+## Map and Geocoding
 
-To learn more about React Native, take a look at the following resources:
+The app uses Mapbox for:
+- map rendering
+- static map preview generation
+- reverse geocoding coordinates into an address
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+## Development Scripts
+
+```json
+{
+  "android": "react-native run-android",
+  "ios": "react-native run-ios",
+  "lint": "eslint .",
+  "start": "react-native start",
+  "test": "jest"
+}
+```
+
+## Known Limitations
+
+- Requires a valid Mapbox token to work correctly
+- Some permission behavior may vary by platform/device version
+- Saved data is local to the device and is not synced to a backend
+- Error handling can still be improved for some initialization and network failure cases
+
+## Future Improvements
+
+Possible next steps:
+- improve app startup and error states
+- add edit/delete place support
+- add better form validation
+- replace temporary in-memory picked-location state with a more robust flow
+- improve test coverage
+- add CI for linting and tests
+- add screenshots or demo GIFs to this README
+
+## Troubleshooting
+
+### App crashes or map does not load
+Check that `.env` exists and contains a valid:
+
+```env
+MAPBOX_ACCESS_TOKEN=...
+```
+
+### iOS build issues
+Try:
+
+```sh
+bundle exec pod install
+```
+
+and rebuild from Xcode or rerun:
+
+```sh
+npm run ios
+```
+
+### Android permission issues
+Make sure location and camera permissions are enabled for the app in device settings.
+
+## Author
+
+Built as a React Native mobile app project for saving favourite places with photos and map-based location selection.
