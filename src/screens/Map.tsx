@@ -60,7 +60,13 @@ export default function Map() {
         if (!place?.imageUri) return;
         setImageUri(place.imageUri);
       })
-      .catch(() => {});
+      .catch(() => {
+        setMarkerCaptureFailed(true);
+        Alert.alert(
+          'Marker Image Unavailable',
+          'Could not load the place image for the map marker.',
+        );
+      });
   }, [placeId]);
 
   useEffect(() => {
