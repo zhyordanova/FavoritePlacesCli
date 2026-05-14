@@ -1,9 +1,10 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useEffect, useState } from 'react';
-import { StatusBar } from 'react-native';
+import { ActivityIndicator, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { init } from './src/util/database';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import BootSplash from 'react-native-bootsplash';
 
 import AllPlaces from './src/screens/AllPlaces';
 import AddPlace from './src/screens/AddPlace';
@@ -22,15 +23,55 @@ const stackScreenOptions = {
 };
 
 export default function App() {
-  const [dbInitialized, setDbInitialized] = useState(false);
+  const [isAppReady, setIsAppReady] = useState(false);
+  const [bootstrapError, setBootstrapError] = useState<string | null>(null);
 
   useEffect(() => {
-    Promise.all([Ionicons.loadFont(), init()]).then(() =>
-      setDbInitialized(true),
-    );
+    let isMounted = true;
+
+    async function bootstrapApp() {
+      try {
+        await Promise.all([Ionicons.loadFont(), init()]);
+
+        if (!isMounted) {
+          return;
+        }
+
+        setIsAppReady(true);
+        await BootSplash.hide({ fade: true });
+      } catch {
+        if (!isMounted) {
+          return;
+        }
+
+        setBootstrapError('Failed to initialize the app. Please restart it.');
+        await BootSplash.hide({ fade: true });
+      }
+    }
+
+    bootstrapApp();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  if (!dbInitialized) return null;
+  if (bootstrapError) {
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.errorTitle}>App failed to start</Text>
+        <Text style={styles.errorText}>{bootstrapError}</Text>
+      </View>
+    );
+  }
+
+  if (!isAppReady) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color={Colors.primary500} />
+      </View>
+    );
+  }
 
   return (
     <>
@@ -68,3 +109,27 @@ export default function App() {
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.primary50,
+    paddingHorizontal: 24,
+  },
+
+  errorTitle: {
+    color: Colors.primary500,
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+
+  errorText: {
+    color: Colors.gray700,
+    fontSize: 16,
+    textAlign: 'center',
+  },
+});
