@@ -10,7 +10,9 @@ import {
   ActivityIndicator,
   Alert,
   Platform,
+  Pressable,
   StyleSheet,
+  Text,
   View,
 } from 'react-native';
 import Mapbox, { type ScreenPointPayload } from '@rnmapbox/maps';
@@ -24,6 +26,7 @@ import MarkerGenerator from '../components/UI/MarkerGenerator';
 import { useMarkerImage } from '../hooks/useMarkerImage';
 import { setPickedMapLocation } from '../store/picked-location-store';
 import { fetchPlaceDetails } from '../util/database';
+import { Colors } from '../constants/colors';
 
 const MAPBOX_ACCESS_TOKEN: string | null = Config.MAPBOX_ACCESS_TOKEN ?? null;
 
@@ -44,6 +47,8 @@ export default function Map() {
   const [markerCaptureFailed, setMarkerCaptureFailed] = useState(false);
   const [isMapMounted, setIsMapMounted] = useState(Platform.OS !== 'android');
   const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [hasMapLoadTimedOut, setHasMapLoadTimedOut] = useState(false);
+  const [mapRenderKey, setMapRenderKey] = useState(0);
   const mountDelayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const loadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -55,7 +60,7 @@ export default function Map() {
         if (!place?.imageUri) return;
         setImageUri(place.imageUri);
       })
-      .catch(console.log);
+      .catch(() => {});
   }, [placeId]);
 
   useEffect(() => {
@@ -120,6 +125,9 @@ export default function Map() {
       }
 
       setIsMapMounted(false);
+      setIsMapLoaded(false);
+      setHasMapLoadTimedOut(false);
+      setMapRenderKey(prev => prev + 1);
 
       mountDelayTimerRef.current = setTimeout(() => {
         setIsMapMounted(true);
@@ -133,6 +141,7 @@ export default function Map() {
 
         setIsMapMounted(false);
         setIsMapLoaded(false);
+        setHasMapLoadTimedOut(false);
       };
     }, []),
   );
@@ -140,11 +149,15 @@ export default function Map() {
   useEffect(() => {
     if (!isMapMounted) return;
 
-    // Fallback: show map after max 2s even if onDidFinishLoadingMap doesn't fire
+    setIsMapLoaded(false);
+    setHasMapLoadTimedOut(false);
+
+    // Keep loading UI visible until map is fully loaded. If this times out,
+    // show a retry action instead of revealing a blank blue map.
     loadTimeoutRef.current = setTimeout(() => {
-      setIsMapLoaded(true);
+      setHasMapLoadTimedOut(true);
       loadTimeoutRef.current = null;
-    }, 2000);
+    }, 6000);
 
     return () => {
       if (loadTimeoutRef.current) {
@@ -153,6 +166,12 @@ export default function Map() {
       }
     };
   }, [isMapMounted]);
+
+  function retryMapLoadHandler() {
+    setHasMapLoadTimedOut(false);
+    setIsMapLoaded(false);
+    setMapRenderKey(prev => prev + 1);
+  }
 
   useEffect(() => {
     navigation.setOptions({
@@ -188,12 +207,14 @@ export default function Map() {
       {isMapMounted ? (
         <>
           <Mapbox.MapView
+            key={mapRenderKey}
             style={styles.map}
             styleURL={Mapbox.StyleURL.Street}
             surfaceView={false}
             onPress={selectLocationHandler}
             onDidFinishLoadingMap={() => {
               setIsMapLoaded(true);
+              setHasMapLoadTimedOut(false);
               if (loadTimeoutRef.current) {
                 clearTimeout(loadTimeoutRef.current);
                 loadTimeoutRef.current = null;
@@ -218,6 +239,22 @@ export default function Map() {
           {!isMapLoaded && (
             <View style={[styles.mapLoadingContainer, StyleSheet.absoluteFill]}>
               <ActivityIndicator size="large" color="#1c7ed6" />
+              {hasMapLoadTimedOut && (
+                <>
+                  <Text style={styles.mapLoadingText}>
+                    Map is taking longer than expected to load.
+                  </Text>
+                  <Pressable
+                    style={({ pressed }) => [
+                      styles.retryButton,
+                      pressed && styles.retryPressed,
+                    ]}
+                    onPress={retryMapLoadHandler}
+                  >
+                    <Text style={styles.retryButtonText}>Retry Map</Text>
+                  </Pressable>
+                </>
+              )}
             </View>
           )}
         </>
@@ -238,5 +275,32 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#dff3fb',
+  },
+
+  mapLoadingText: {
+    marginTop: 12,
+    color: Colors.primary500,
+    fontSize: 14,
+    textAlign: 'center',
+    paddingHorizontal: 24,
+  },
+
+  retryButton: {
+    marginTop: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: Colors.primary500,
+    backgroundColor: Colors.primary50,
+  },
+
+  retryPressed: {
+    opacity: 0.75,
+  },
+
+  retryButtonText: {
+    color: Colors.primary500,
+    fontWeight: '600',
   },
 });
