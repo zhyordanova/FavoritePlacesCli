@@ -1,5 +1,5 @@
-import { Image, StyleSheet, View } from "react-native";
-import Mapbox from "@rnmapbox/maps";
+import { Image, StyleSheet, View } from 'react-native';
+import Mapbox from '@rnmapbox/maps';
 
 interface LocationMarkerProps {
   coordinate: [number, number];
@@ -34,21 +34,21 @@ const styles = StyleSheet.create({
   markerImage: {
     width: 84,
     height: 96,
-    resizeMode: "contain",
+    resizeMode: 'contain',
   },
 
   fallbackMarkerContainer: {
-    alignItems: "center",
+    alignItems: 'center',
   },
 
   fallbackMarkerHead: {
     width: 22,
     height: 22,
     borderRadius: 11,
-    backgroundColor: "#E53935",
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#000",
+    backgroundColor: '#E53935',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
     shadowOpacity: 0.22,
     shadowRadius: 3,
     shadowOffset: { width: 0, height: 1 },
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
 
   fallbackMarkerTip: {
@@ -68,9 +68,9 @@ const styles = StyleSheet.create({
     borderLeftWidth: 6,
     borderRightWidth: 6,
     borderTopWidth: 8,
-    borderLeftColor: "transparent",
-    borderRightColor: "transparent",
-    borderTopColor: "#E53935",
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderTopColor: '#E53935',
     marginTop: -2,
   },
 });

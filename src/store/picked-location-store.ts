@@ -1,4 +1,4 @@
-import { Coordinates } from "../types";
+import { Coordinates } from '../types';
 
 let pickedMapLocation: Coordinates | undefined;
 

@@ -5,6 +5,8 @@
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
+    "format": "prettier --write \"App.tsx\" \"index.js\" \"src/**/*.{ts,tsx,js,jsx}\"",
+    "format:check": "prettier --check \"App.tsx\" \"index.js\" \"src/**/*.{ts,tsx,js,jsx}\"",
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest"
@@ -22,7 +24,6 @@
     "react-native-config": "^1.6.1",
     "react-native-geolocation-service": "^5.3.1",
     "react-native-image-picker": "^8.2.1",
-    "react-native-maps": "^1.27.2",
     "react-native-safe-area-context": "^5.7.0",
     "react-native-screens": "^4.24.0",
     "react-native-vector-icons": "^10.3.0",

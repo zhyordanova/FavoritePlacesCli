@@ -80,11 +80,15 @@ export default function ImagePicker({
     }
 
     if (granted === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
-      showOpenSettingsAlert('Please enable camera access in Settings to continue.');
+      showOpenSettingsAlert(
+        'Please enable camera access in Settings to continue.',
+      );
       return false;
     }
 
-    showOpenSettingsAlert('Please enable camera access in Settings to continue.');
+    showOpenSettingsAlert(
+      'Please enable camera access in Settings to continue.',
+    );
     return false;
   }
 
@@ -98,7 +102,9 @@ export default function ImagePicker({
 
     if (image.errorCode) {
       if (image.errorCode === 'permission') {
-        showOpenSettingsAlert('Please enable camera access in Settings to continue.');
+        showOpenSettingsAlert(
+          'Please enable camera access in Settings to continue.',
+        );
         return;
       }
 
@@ -125,7 +131,9 @@ export default function ImagePicker({
 
     if (image.errorCode) {
       if (image.errorCode === 'permission') {
-        showOpenSettingsAlert('Please enable photo library access in Settings to continue.');
+        showOpenSettingsAlert(
+          'Please enable photo library access in Settings to continue.',
+        );
         return;
       }
 

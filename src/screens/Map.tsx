@@ -3,27 +3,27 @@ import {
   useFocusEffect,
   useNavigation,
   useRoute,
-} from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+} from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
   Platform,
   StyleSheet,
   View,
-} from "react-native";
-import Mapbox, { type ScreenPointPayload } from "@rnmapbox/maps";
-import Config from "react-native-config";
+} from 'react-native';
+import Mapbox, { type ScreenPointPayload } from '@rnmapbox/maps';
+import Config from 'react-native-config';
 
-import { RootStackParamList } from "../types/navigation";
+import { RootStackParamList } from '../types/navigation';
 
-import IconButton from "../components/UI/IconButton";
-import LocationMarker from "../components/UI/LocationMarker";
-import MarkerGenerator from "../components/UI/MarkerGenerator";
-import { useMarkerImage } from "../hooks/useMarkerImage";
-import { setPickedMapLocation } from "../store/picked-location-store";
-import { fetchPlaceDetails } from "../util/database";
+import IconButton from '../components/UI/IconButton';
+import LocationMarker from '../components/UI/LocationMarker';
+import MarkerGenerator from '../components/UI/MarkerGenerator';
+import { useMarkerImage } from '../hooks/useMarkerImage';
+import { setPickedMapLocation } from '../store/picked-location-store';
+import { fetchPlaceDetails } from '../util/database';
 
 const MAPBOX_ACCESS_TOKEN: string | null = Config.MAPBOX_ACCESS_TOKEN ?? null;
 
@@ -33,8 +33,8 @@ const DEFAULT_CENTER: [number, number] = [-122.4324, 37.78825];
 
 export default function Map() {
   const navigation =
-    useNavigation<NativeStackNavigationProp<RootStackParamList, "Map">>();
-  const route = useRoute<RouteProp<RootStackParamList, "Map">>();
+    useNavigation<NativeStackNavigationProp<RootStackParamList, 'Map'>>();
+  const route = useRoute<RouteProp<RootStackParamList, 'Map'>>();
   const { lat, lng, placeId } = route.params ?? {};
 
   const initialLocation = lat && lng ? { lat: +lat, lng: +lng } : undefined;
@@ -42,7 +42,7 @@ export default function Map() {
   const [selectedLocation, setSelectedLocation] = useState(initialLocation);
   const [imageUri, setImageUri] = useState<string | undefined>();
   const [markerCaptureFailed, setMarkerCaptureFailed] = useState(false);
-  const [isMapMounted, setIsMapMounted] = useState(Platform.OS !== "android");
+  const [isMapMounted, setIsMapMounted] = useState(Platform.OS !== 'android');
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const mountDelayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const loadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -51,7 +51,7 @@ export default function Map() {
     if (!placeId) return;
 
     fetchPlaceDetails(placeId)
-      .then((place) => {
+      .then(place => {
         if (!place?.imageUri) return;
         setImageUri(place.imageUri);
       })
@@ -93,7 +93,7 @@ export default function Map() {
 
   const savePickedLocationHandler = useCallback(() => {
     if (!selectedLocation) {
-      Alert.alert("No location picked!");
+      Alert.alert('No location picked!');
       return;
     }
 
@@ -115,7 +115,7 @@ export default function Map() {
 
   useFocusEffect(
     useCallback(() => {
-      if (Platform.OS !== "android") {
+      if (Platform.OS !== 'android') {
         return () => {};
       }
 
@@ -156,7 +156,7 @@ export default function Map() {
 
   useEffect(() => {
     navigation.setOptions({
-      title: "Map",
+      title: 'Map',
       headerRight: ({ tintColor }) =>
         selectedLocation && !initialLocation ? (
           <IconButton
@@ -167,13 +167,18 @@ export default function Map() {
           />
         ) : null,
     });
-  }, [navigation, selectedLocation, initialLocation, savePickedLocationHandler]);
+  }, [
+    navigation,
+    selectedLocation,
+    initialLocation,
+    savePickedLocationHandler,
+  ]);
 
   return (
     <>
       {shouldGenerate && imageUri && (
         <MarkerGenerator
-          key={placeId ?? "marker-generator"}
+          key={placeId ?? 'marker-generator'}
           imageUri={imageUri}
           onGenerated={markerGeneratedHandler}
           onFailed={markerGenerationFailedHandler}
@@ -230,9 +235,8 @@ const styles = StyleSheet.create({
 
   mapLoadingContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#dff3fb",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#dff3fb',
   },
-
 });

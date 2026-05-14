@@ -1,11 +1,21 @@
-import { open } from "@op-engineering/op-sqlite";
+import { open } from '@op-engineering/op-sqlite';
 
-import { Place } from "../models/place";
+import { Place } from '../models/place';
+import { PlaceRow } from '../types';
 
-const db = open({ name: "places.db" });
+const db = open({ name: 'places.db' });
+
+function mapRowToPlace(row: PlaceRow): Place {
+  return new Place(
+    row.title,
+    row.imageUri,
+    { address: row.address, lat: row.lat, lng: row.lng },
+    row.id,
+  );
+}
 
 export async function init(): Promise<void> {
-  db.execute(`CREATE TABLE IF NOT EXISTS places (
+  await db.execute(`CREATE TABLE IF NOT EXISTS places (
     id TEXT PRIMARY KEY NOT NULL,
     title TEXT NOT NULL,
     imageUri TEXT NOT NULL,
@@ -16,7 +26,7 @@ export async function init(): Promise<void> {
 }
 
 export async function insertPlace(place: Place): Promise<void> {
-  db.execute(
+  await db.execute(
     `INSERT INTO places (id, title, imageUri, address, lat, lng) VALUES (?, ?, ?, ?, ?, ?)`,
     [
       place.id,
@@ -30,46 +40,19 @@ export async function insertPlace(place: Place): Promise<void> {
 }
 
 export async function fetchPlaces(): Promise<Place[]> {
-  const result = db.executeSync(`SELECT * FROM places`);
-  const rows = (result.rows ?? []) as {
-    id: string;
-    title: string;
-    imageUri: string;
-    address: string;
-    lat: number;
-    lng: number;
-  }[];
+  const result = await db.execute(`SELECT * FROM places`);
+  const rows = (result.rows ?? []) as unknown as PlaceRow[];
 
-  return rows.map(
-    (row) =>
-      new Place(
-        row.title,
-        row.imageUri,
-        { address: row.address, lat: row.lat, lng: row.lng },
-        row.id,
-      ),
-  );
+  return rows.map(mapRowToPlace);
 }
 
 export async function fetchPlaceDetails(id: string): Promise<Place> {
-  const result = db.executeSync(`SELECT * FROM places WHERE id = ?`, [id]);
-  const row = (result.rows?.[0] ?? null) as {
-    id: string;
-    title: string;
-    imageUri: string;
-    address: string;
-    lat: number;
-    lng: number;
-  } | null;
+  const result = await db.execute(`SELECT * FROM places WHERE id = ?`, [id]);
+  const row = (result.rows?.[0] ?? null) as unknown as PlaceRow | null;
 
   if (!row) {
-    throw new Error("Could not find place with the provided id.");
+    throw new Error('Could not find place with the provided id.');
   }
 
-  return new Place(
-    row.title,
-    row.imageUri,
-    { address: row.address, lat: row.lat, lng: row.lng },
-    row.id,
-  );
+  return mapRowToPlace(row);
 }

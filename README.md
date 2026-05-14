@@ -204,7 +204,7 @@ Possible next steps:
 - add better form validation
 - replace temporary in-memory picked-location state with a more robust flow
 - improve test coverage
-- add CI for linting and tests
+- extend CI to run automated tests
 - add screenshots or demo GIFs to this README
 
 ## Troubleshooting
