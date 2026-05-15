@@ -19,6 +19,7 @@ import PlaceDetails from './src/screens/PlaceDetails';
 import IconButton from './src/components/UI/IconButton';
 import { Colors } from './src/constants/colors';
 import { RootStackParamList } from './src/types/navigation';
+import { initializeMapbox } from './src/util/mapbox';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -37,6 +38,7 @@ export default function App() {
 
     async function bootstrapApp() {
       try {
+        initializeMapbox();
         await Promise.all([Ionicons.loadFont(), init()]);
 
         if (!isMounted) {

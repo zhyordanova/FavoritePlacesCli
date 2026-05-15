@@ -16,7 +16,6 @@ import {
   View,
 } from 'react-native';
 import Mapbox, { type ScreenPointPayload } from '@rnmapbox/maps';
-import Config from 'react-native-config';
 
 import { RootStackParamList } from '../types/navigation';
 
@@ -28,10 +27,6 @@ import { setPickedMapLocation } from '../store/picked-location-store';
 import { fetchPlaceDetails } from '../util/database';
 import { Colors } from '../constants/colors';
 
-const MAPBOX_ACCESS_TOKEN: string | null = Config.MAPBOX_ACCESS_TOKEN ?? null;
-
-Mapbox.setAccessToken(MAPBOX_ACCESS_TOKEN);
-
 const DEFAULT_CENTER: [number, number] = [-122.4324, 37.78825];
 
 export default function Map() {
@@ -40,7 +35,10 @@ export default function Map() {
   const route = useRoute<RouteProp<RootStackParamList, 'Map'>>();
   const { lat, lng, placeId } = route.params ?? {};
 
-  const initialLocation = lat && lng ? { lat: +lat, lng: +lng } : undefined;
+  const initialLocation = useMemo(
+    () => (lat && lng ? { lat: +lat, lng: +lng } : undefined),
+    [lat, lng],
+  );
 
   const [selectedLocation, setSelectedLocation] = useState(initialLocation);
   const [imageUri, setImageUri] = useState<string | undefined>();
@@ -51,6 +49,16 @@ export default function Map() {
   const [mapRenderKey, setMapRenderKey] = useState(0);
   const mountDelayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const loadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const markMapAsReady = useCallback(() => {
+    setIsMapLoaded(true);
+    setHasMapLoadTimedOut(false);
+
+    if (loadTimeoutRef.current) {
+      clearTimeout(loadTimeoutRef.current);
+      loadTimeoutRef.current = null;
+    }
+  }, []);
 
   useEffect(() => {
     if (!placeId) return;
@@ -216,16 +224,10 @@ export default function Map() {
             key={mapRenderKey}
             style={styles.map}
             styleURL={Mapbox.StyleURL.Street}
-            surfaceView={false}
+            surfaceView={Platform.OS === 'android'}
             onPress={selectLocationHandler}
-            onDidFinishLoadingMap={() => {
-              setIsMapLoaded(true);
-              setHasMapLoadTimedOut(false);
-              if (loadTimeoutRef.current) {
-                clearTimeout(loadTimeoutRef.current);
-                loadTimeoutRef.current = null;
-              }
-            }}
+            onDidFinishRenderingMapFully={markMapAsReady}
+            onMapIdle={markMapAsReady}
           >
             <Mapbox.Camera
               defaultSettings={{
