@@ -49,15 +49,26 @@ export default function Map() {
   const [mapRenderKey, setMapRenderKey] = useState(0);
   const mountDelayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const loadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const readyDelayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const markMapAsReady = useCallback(() => {
-    setIsMapLoaded(true);
-    setHasMapLoadTimedOut(false);
-
-    if (loadTimeoutRef.current) {
-      clearTimeout(loadTimeoutRef.current);
-      loadTimeoutRef.current = null;
+    // Clear any pending ready timer
+    if (readyDelayTimerRef.current) {
+      clearTimeout(readyDelayTimerRef.current);
     }
+
+    // Wait 1 second for map to fully render before hiding loader
+    readyDelayTimerRef.current = setTimeout(() => {
+      setIsMapLoaded(true);
+      setHasMapLoadTimedOut(false);
+
+      if (loadTimeoutRef.current) {
+        clearTimeout(loadTimeoutRef.current);
+        loadTimeoutRef.current = null;
+      }
+
+      readyDelayTimerRef.current = null;
+    }, 1000);
   }, []);
 
   useEffect(() => {
@@ -178,6 +189,11 @@ export default function Map() {
         clearTimeout(loadTimeoutRef.current);
         loadTimeoutRef.current = null;
       }
+
+      if (readyDelayTimerRef.current) {
+        clearTimeout(readyDelayTimerRef.current);
+        readyDelayTimerRef.current = null;
+      }
     };
   }, [isMapMounted]);
 
@@ -230,10 +246,10 @@ export default function Map() {
             onMapIdle={markMapAsReady}
           >
             <Mapbox.Camera
-              defaultSettings={{
-                centerCoordinate: initialCoordinate,
-                zoomLevel: 14,
-              }}
+              centerCoordinate={initialCoordinate}
+              zoomLevel={14}
+              animationMode="flyTo"
+              animationDuration={1000}
             />
 
             {shouldRenderMarker && selectedCoordinate && (
