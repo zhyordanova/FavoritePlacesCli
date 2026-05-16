@@ -93,7 +93,7 @@ export default function PlaceDetails() {
   return (
     <>
       <ScrollView>
-        <Image style={styles.image} source={{ uri: fetchedPlace?.imageUri }} />
+        <Image style={styles.image} source={{ uri: fetchedPlace.imageUri }} />
 
         <View style={styles.locationContainer}>
           <View style={styles.addressContainer}>
