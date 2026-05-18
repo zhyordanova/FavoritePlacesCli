@@ -242,8 +242,8 @@ export default function Map() {
             styleURL={Mapbox.StyleURL.Street}
             surfaceView={Platform.OS === 'android'}
             onPress={selectLocationHandler}
-            onDidFinishRenderingMapFully={markMapAsReady}
-            onMapIdle={markMapAsReady}
+            onDidFinishLoadingMap={markMapAsReady}
+            onMapIdle={Platform.OS === 'android' ? markMapAsReady : undefined}
           >
             <Mapbox.Camera
               centerCoordinate={initialCoordinate}
