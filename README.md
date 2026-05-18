@@ -331,7 +331,6 @@ Some of the most interesting parts of the project were:
 Possible future enhancements:
 
 - edit or delete saved places
-- add screenshots or a demo GIF to this README
 - improve visual polish and animations
 - expand form validation
 - introduce automated tests for core flows if the project scope grows
@@ -367,4 +366,4 @@ Make sure camera, photo library, and location permissions are enabled for the ap
 
 ## Author
 
-Built by **[YOUR NAME HERE](https://github.com/YOUR_GITHUB_USERNAME)** as part of a React Native mobile development portfolio focused on native integrations, TypeScript, and practical mobile UX.
+Built by **[Zhivka Halyov](https://github.com/zhyordanova)** as part of a React Native mobile development portfolio focused on native integrations, TypeScript, and practical mobile UX.
