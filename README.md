@@ -8,7 +8,7 @@ Built with **React Native CLI**, **TypeScript**, **SQLite**, and **Mapbox**, the
 
 ## Preview
 
-> Add your screenshots or GIFs in the placeholders below.
+Screenshots and demo recordings from both platforms.
 
 ### Screenshots
 
@@ -173,11 +173,7 @@ Create a `.env` file in the project root:
 MAPBOX_ACCESS_TOKEN=your_mapbox_access_token_here
 ```
 
-You can also create a `.env.example` file like this:
-
-```env
-MAPBOX_ACCESS_TOKEN=
-```
+An `.env.example` file is included in the repository as a template.
 
 ---
 
