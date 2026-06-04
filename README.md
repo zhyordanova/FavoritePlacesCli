@@ -27,27 +27,14 @@ Screenshots and demo recordings from both platforms.
 Short demo recordings of the app running on both platforms.
 
 #### iOS
-![iOS Demo](./assets/readme/demo-ios.gif)
+<img src="./assets/readme/demo-ios.gif" alt="iOS Demo" width="320" />
+![iOS Demo]()
 
 #### Android
-![Android Demo](./assets/readme/demo-android.gif)
+<img src="./assets/readme/demo-android.gif" alt="Android Demo" width="320" />
 
 ---
 
-## 📱 Why I Built This
-
-I built this project to practice working with real mobile features beyond basic UI and CRUD flows. The main goal was to create a small but complete mobile app that includes:
-
-- native device permissions
-- camera and gallery integration
-- geolocation
-- interactive maps
-- offline storage with SQLite
-- loading, error, and retry states across core screens
-
-This project is intentionally scoped as a focused learning and portfolio app rather than a large-scale production product.
-
----
 
 ## 📸 Key Features
 
@@ -278,30 +265,6 @@ Mapbox configuration is centralized and initialized during app bootstrap.
 
 ---
 
-## 🚧 Development Scripts
-
-```json
-{
-  "android": "react-native run-android",
-  "ios": "react-native run-ios",
-  "format": "prettier --write \"App.tsx\" \"index.js\" \"src/**/*.{ts,tsx,js,jsx}\"",
-  "format:check": "prettier --check \"App.tsx\" \"index.js\" \"src/**/*.{ts,tsx,js,jsx}\"",
-  "lint": "eslint .",
-  "start": "react-native start",
-  "test": "jest"
-}
-```
-
----
-
-## CI
-
-The repository includes a GitHub Actions workflow that runs:
-
-- `npm ci`
-- `npm run lint`
-- `npm run format:check`
-
 ---
 
 ## 🎓 Challenges and Lessons Learned
@@ -366,12 +329,6 @@ Make sure camera, photo library, and location permissions are enabled for the ap
 
 ## 👤 Author
 
-Created as a practical portfolio project demonstrating production-grade React Native architecture and best practices.
+Created as a practical portfolio project demonstrating practical React Native architecture and mobile development best practices.
 
 For questions or feature ideas, feel free to open an issue or reach out.
-
----
-
-## 📝 License
-
-Private / Portfolio Use
