@@ -5,6 +5,17 @@ import { PlaceRow } from '../types';
 
 const db = open({ name: 'places.db' });
 
+type TableInfoRow = {
+  name?: string;
+};
+
+async function hasCreatedAtColumn(): Promise<boolean> {
+  const result = await db.execute(`PRAGMA table_info(places)`);
+  const rows = (result.rows ?? []) as unknown as TableInfoRow[];
+
+  return rows.some(row => row.name === 'createdAt');
+}
+
 function mapRowToPlace(row: PlaceRow): Place {
   return new Place(
     row.title,
@@ -21,13 +32,26 @@ export async function init(): Promise<void> {
     imageUri TEXT NOT NULL,
     address TEXT NOT NULL,
     lat REAL NOT NULL,
-    lng REAL NOT NULL
+    lng REAL NOT NULL,
+    createdAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
   )`);
+
+  const hasCreatedAt = await hasCreatedAtColumn();
+
+  if (!hasCreatedAt) {
+    await db.execute(
+      `ALTER TABLE places ADD COLUMN createdAt INTEGER NOT NULL DEFAULT 0`,
+    );
+  }
+
+  await db.execute(
+    `UPDATE places SET createdAt = CAST(strftime('%s', 'now') AS INTEGER) WHERE createdAt IS NULL OR createdAt = 0`,
+  );
 }
 
 export async function insertPlace(place: Place): Promise<void> {
   await db.execute(
-    `INSERT INTO places (id, title, imageUri, address, lat, lng) VALUES (?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO places (id, title, imageUri, address, lat, lng, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?)`,
     [
       place.id,
       place.title,
@@ -35,12 +59,15 @@ export async function insertPlace(place: Place): Promise<void> {
       place.address,
       place.location.lat,
       place.location.lng,
+      Math.floor(Date.now() / 1000),
     ],
   );
 }
 
 export async function fetchPlaces(): Promise<Place[]> {
-  const result = await db.execute(`SELECT * FROM places`);
+  const result = await db.execute(
+    `SELECT * FROM places ORDER BY createdAt DESC`,
+  );
   const rows = (result.rows ?? []) as unknown as PlaceRow[];
 
   return rows.map(mapRowToPlace);

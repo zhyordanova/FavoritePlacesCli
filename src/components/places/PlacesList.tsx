@@ -1,11 +1,12 @@
-import { useNavigation } from '@react-navigation/native';
 import { useMemo } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 import { AllPlacesNavigationProp } from '../../types/navigation';
 
 import PlaceItem from './PlaceItem';
 import { Place } from '../../models/place';
+import { Spacing } from '../../constants/spacing';
 
 interface PlacesListProps {
   places: Place[];
@@ -14,7 +15,6 @@ interface PlacesListProps {
 export default function PlacesList({ places }: PlacesListProps) {
   const navigation = useNavigation<AllPlacesNavigationProp>();
   const reversedPlaces = useMemo(() => [...places].reverse(), [places]);
-
   function selectPlaceHandler(id: string) {
     navigation.navigate('PlaceDetails', { placeId: id });
   }
@@ -43,7 +43,7 @@ export default function PlacesList({ places }: PlacesListProps) {
 
 const styles = StyleSheet.create({
   list: {
-    margin: 24,
+    margin: Spacing.xxl,
   },
 
   fallbackContainer: {

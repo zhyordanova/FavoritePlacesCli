@@ -3,6 +3,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCallback, useState } from 'react';
 import Geolocation from 'react-native-geolocation-service';
 import {
+  ActivityIndicator,
   Alert,
   Image,
   PermissionsAndroid,
@@ -12,8 +13,9 @@ import {
   View,
 } from 'react-native';
 
-import OutlinedButton from '../UI/OutlinedButton';
+import OutlinedButton from '../ui/OutlinedButton';
 import { sharedPickerStyles } from '../../constants/sharedStyles';
+import { Spacing } from '../../constants/spacing';
 import { consumePickedMapLocation } from '../../store/picked-location-store';
 import { Location } from '../../types';
 import { getAddress, getMapPreview } from '../../util/location';
@@ -189,10 +191,17 @@ export default function LocationPicker({
     navigation.navigate('Map');
   }
 
-  let locationPreview = <Text>No location picked yet.</Text>;
+  let locationPreview = (
+    <Text style={sharedPickerStyles.statusText}>No location picked yet.</Text>
+  );
 
   if (isLoadingLocation) {
-    locationPreview = <Text>Loading location...</Text>;
+    locationPreview = (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#1c7ed6" />
+        <Text style={sharedPickerStyles.statusText}>Fetching location...</Text>
+      </View>
+    );
   } else if (pickedLocation) {
     locationPreview = (
       <Image
@@ -213,7 +222,7 @@ export default function LocationPicker({
           onPress={getLocationHandler}
           disabled={isLoadingLocation}
         >
-          Locate User
+          {isLoadingLocation ? 'Locating...' : 'Locate User'}
         </OutlinedButton>
 
         <OutlinedButton icon="map-outline" onPress={pickOnMapHandler}>
@@ -229,5 +238,12 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     borderRadius: 4,
+  },
+
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: Spacing.lg,
   },
 });

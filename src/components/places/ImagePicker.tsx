@@ -14,7 +14,7 @@ import {
   View,
 } from 'react-native';
 
-import OutlinedButton from '../UI/OutlinedButton';
+import OutlinedButton from '../ui/OutlinedButton';
 import { sharedPickerStyles } from '../../constants/sharedStyles';
 import { CAMERA_OPTIONS } from '../../constants/imagePicker';
 import { showOpenSettingsAlert } from '../../util/permissions';
@@ -53,7 +53,7 @@ export default function ImagePicker({
     try {
       await CameraRoll.saveAsset(uri, {
         type: 'photo',
-        album: 'FavouritePlaces',
+        album: 'FavoritePlaces',
       });
     } catch {
       // On some devices this can fail if Photos permission is denied.
@@ -147,7 +147,9 @@ export default function ImagePicker({
     await processImageResult(image, false);
   }
 
-  let imagePreview = <Text>No image taken yet.</Text>;
+  let imagePreview = (
+    <Text style={sharedPickerStyles.statusText}>No image taken yet.</Text>
+  );
 
   if (selectedImage) {
     imagePreview = (

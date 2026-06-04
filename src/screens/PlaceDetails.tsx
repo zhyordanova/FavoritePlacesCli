@@ -12,8 +12,9 @@ import {
 
 import { RootStackParamList } from '../types/navigation';
 
-import OutlinedButton from '../components/UI/OutlinedButton';
+import OutlinedButton from '../components/ui/OutlinedButton';
 import { Colors } from '../constants/colors';
+import { Spacing } from '../constants/spacing';
 import { fetchPlaceDetails } from '../util/database';
 import { Place } from '../models/place';
 
@@ -114,7 +115,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: Spacing.xxl,
   },
 
   image: {
@@ -129,7 +130,7 @@ const styles = StyleSheet.create({
   },
 
   addressContainer: {
-    padding: 20,
+    padding: Spacing.xl,
   },
 
   address: {

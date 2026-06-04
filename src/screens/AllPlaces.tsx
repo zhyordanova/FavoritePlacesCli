@@ -2,9 +2,10 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
-import PlacesList from '../components/Places/PlacesList';
-import OutlinedButton from '../components/UI/OutlinedButton';
+import PlacesList from '../components/places/PlacesList';
+import OutlinedButton from '../components/ui/OutlinedButton';
 import { Colors } from '../constants/colors';
+import { Spacing } from '../constants/spacing';
 import { fetchPlaces } from '../util/database';
 import { Place } from '../models/place';
 
@@ -60,7 +61,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: Spacing.xxl,
   },
 
   errorText: {

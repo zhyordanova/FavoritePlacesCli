@@ -1,23 +1,25 @@
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Pressable, StyleSheet } from 'react-native';
 
+import { Spacing } from '../../constants/spacing';
+
 interface IconButtonProps {
   icon: React.ComponentProps<typeof Ionicons>['name'];
   size: number;
   color: string | undefined;
-  onClick: () => void;
+  onPress: () => void;
 }
 
 export default function IconButton({
   icon,
   size,
   color,
-  onClick,
+  onPress,
 }: IconButtonProps) {
   return (
     <Pressable
       style={({ pressed }) => [styles.button, pressed && styles.pressed]}
-      onPress={onClick}
+      onPress={onPress}
     >
       <Ionicons name={icon} size={size} color={color} />
     </Pressable>
@@ -26,7 +28,7 @@ export default function IconButton({
 
 const styles = StyleSheet.create({
   button: {
-    margin: 6,
+    margin: Spacing.sm,
     justifyContent: 'center',
     alignItems: 'center',
   },

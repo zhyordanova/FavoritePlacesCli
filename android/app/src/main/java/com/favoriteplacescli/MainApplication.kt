@@ -1,4 +1,4 @@
-package com.favouriteplacescli
+package com.favoriteplacescli
 
 import android.app.Application
 import com.facebook.react.PackageList

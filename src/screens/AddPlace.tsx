@@ -3,7 +3,7 @@ import { Alert } from 'react-native';
 
 import { RootStackParamList } from '../types/navigation';
 
-import PlaceForm from '../components/Places/PlaceForm';
+import PlaceForm from '../components/places/PlaceForm';
 import { insertPlace } from '../util/database';
 import { Place } from '../models/place';
 

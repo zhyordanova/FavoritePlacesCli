@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text } from 'react-native';
 
 import { Colors } from '../../constants/colors';
+import { Spacing } from '../../constants/spacing';
 
 interface ButtonProps {
   children: React.ReactNode;
@@ -26,10 +27,10 @@ export default function Button({ children, onPress, disabled }: ButtonProps) {
 
 const styles = StyleSheet.create({
   button: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    margin: 4,
-    marginHorizontal: 24,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    margin: Spacing.xs,
+    marginHorizontal: Spacing.xxl,
     backgroundColor: Colors.primary800,
     borderRadius: 4,
     elevation: 2,

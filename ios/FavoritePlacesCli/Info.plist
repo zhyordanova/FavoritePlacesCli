@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>FavouritePlacesCli</string>
+	<string>FavoritePlacesCli</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -35,7 +35,7 @@
 		<true/>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We need your location to save favourite places.</string>
+	<string>We need your location to save favorite places.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>The app uses the camera so you can take a photo of a place.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

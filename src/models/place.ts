@@ -1,5 +1,9 @@
 import { Location } from '../types';
 
+function createPlaceId(): string {
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+}
+
 export class Place {
   id: string;
   title: string;
@@ -13,7 +17,7 @@ export class Place {
     location: Location,
     id?: string,
   ) {
-    this.id = id ?? new Date().toString() + Math.random().toString();
+    this.id = id ?? createPlaceId();
     this.title = title;
     this.imageUri = imageUri;
     this.address = location.address;

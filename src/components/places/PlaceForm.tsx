@@ -8,10 +8,11 @@ import {
   View,
 } from 'react-native';
 
-import Button from '../UI/Button';
+import Button from '../ui/Button';
 import ImagePicker from './ImagePicker';
 import LocationPicker from './LocationPicker';
 import { Colors } from '../../constants/colors';
+import { Spacing } from '../../constants/spacing';
 import { Place } from '../../models/place';
 import { Location } from '../../types';
 
@@ -85,19 +86,19 @@ export default function PlaceForm({ onCreatePlace }: PlaceFormProps) {
 const styles = StyleSheet.create({
   form: {
     flex: 1,
-    padding: 24,
+    padding: Spacing.xxl,
   },
 
   label: {
     fontWeight: 'bold',
-    marginBottom: 4,
+    marginBottom: Spacing.xs,
     color: Colors.primary500,
   },
 
   input: {
-    marginTop: 8,
-    paddingHorizontal: 4,
-    paddingVertical: 8,
+    marginTop: Spacing.md,
+    paddingHorizontal: Spacing.xs,
+    paddingVertical: Spacing.md,
     fontSize: 16,
     borderColor: Colors.primary500,
     borderWidth: 2,

@@ -1,6 +1,8 @@
-# FavouritePlacesCli
+# Favorite Places React Native CLI
 
-A React Native CLI mobile app for **iOS** and **Android** that lets users save favourite places with a photo, a readable address, and map coordinates.
+## 🎯 Project Overview
+
+A React Native CLI mobile app for **iOS** and **Android** that lets users save favorite places with a photo, a readable address, and map coordinates.
 
 Built with **React Native CLI**, **TypeScript**, **SQLite**, and **Mapbox**, the project demonstrates native mobile integrations such as **camera/gallery access**, **location permissions**, **map-based place selection**, and **offline local persistence**.
 
@@ -32,7 +34,7 @@ Short demo recordings of the app running on both platforms.
 
 ---
 
-## Why I Built This
+## 📱 Why I Built This
 
 I built this project to practice working with real mobile features beyond basic UI and CRUD flows. The main goal was to create a small but complete mobile app that includes:
 
@@ -47,11 +49,11 @@ This project is intentionally scoped as a focused learning and portfolio app rat
 
 ---
 
-## Key Features
+## 📸 Key Features
 
-- Save favourite places with a custom title
+- Save favorite places with a custom title
 - Capture a photo with the camera or choose one from the gallery
-- Save camera-taken photos to a dedicated **FavouritePlaces** device album when permissions allow it
+- Save camera-taken photos to a dedicated **FavoritePlaces** device album when permissions allow it
 - Use the current GPS location or select a point directly on the map
 - Reverse-geocode coordinates into a readable address
 - Persist saved places locally with **SQLite**
@@ -61,7 +63,7 @@ This project is intentionally scoped as a focused learning and portfolio app rat
 
 ---
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 - **React Native CLI**
 - **TypeScript**
@@ -78,7 +80,7 @@ This project is intentionally scoped as a focused learning and portfolio app rat
 
 ---
 
-## What This Project Demonstrates
+## 💡 What This Project Demonstrates
 
 - React Native CLI setup for both **Android** and **iOS**
 - Type-safe screen navigation and component props with **TypeScript**
@@ -103,7 +105,7 @@ This project is intentionally scoped as a focused learning and portfolio app rat
 
 ---
 
-## Project Structure
+## 📂 Project Structure
 
 ```text
 src/
@@ -147,7 +149,7 @@ The screen also includes loading, error, and retry states.
 
 ---
 
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
 
@@ -165,7 +167,7 @@ https://reactnative.dev/docs/set-up-your-environment
 
 ---
 
-## Environment Variables
+## 🔑 Environment Variables
 
 Create a `.env` file in the project root:
 
@@ -174,6 +176,8 @@ MAPBOX_ACCESS_TOKEN=your_mapbox_access_token_here
 ```
 
 An `.env.example` file is included in the repository as a template.
+
+Get your token from [Mapbox](https://mapbox.com).
 
 ---
 
@@ -223,7 +227,7 @@ npm run ios
 
 ---
 
-## Permissions
+## 📋 Permissions Required
 
 This app may request access to:
 
@@ -247,7 +251,7 @@ If permission is denied permanently, the app can guide the user to system settin
 
 ---
 
-## Data Storage
+## 📊 Data Storage
 
 Saved places are stored locally in **SQLite**.
 
@@ -263,7 +267,7 @@ This app does **not** use a backend or cloud sync. Data is stored locally on the
 
 ---
 
-## Map and Geocoding
+## 🗺️ Map and Geocoding
 
 The app uses **Mapbox** for:
 - map rendering
@@ -274,7 +278,7 @@ Mapbox configuration is centralized and initialized during app bootstrap.
 
 ---
 
-## Development Scripts
+## 🚧 Development Scripts
 
 ```json
 {
@@ -300,7 +304,7 @@ The repository includes a GitHub Actions workflow that runs:
 
 ---
 
-## Challenges and Lessons Learned
+## 🎓 Challenges and Lessons Learned
 
 Some of the most interesting parts of the project were:
 
@@ -312,7 +316,7 @@ Some of the most interesting parts of the project were:
 
 ---
 
-## Known Limitations
+## 🤔 Known Limitations
 
 - Requires a valid **Mapbox** token
 - Permission behavior can vary by platform and device version
@@ -322,7 +326,7 @@ Some of the most interesting parts of the project were:
 
 ---
 
-## Future Improvements
+## 🔮 Future Improvements
 
 Possible future enhancements:
 
@@ -333,7 +337,7 @@ Possible future enhancements:
 
 ---
 
-## Troubleshooting
+## ⚙️ Troubleshooting
 
 ### Map does not load
 Check that your `.env` file exists and contains a valid:
@@ -360,6 +364,14 @@ Make sure camera, photo library, and location permissions are enabled for the ap
 
 ---
 
-## Author
+## 👤 Author
 
-Built by **[Zhivka Halyov](https://github.com/zhyordanova)** as part of a React Native mobile development portfolio focused on native integrations, TypeScript, and practical mobile UX.
+Created as a practical portfolio project demonstrating production-grade React Native architecture and best practices.
+
+For questions or feature ideas, feel free to open an issue or reach out.
+
+---
+
+## 📝 License
+
+Private / Portfolio Use

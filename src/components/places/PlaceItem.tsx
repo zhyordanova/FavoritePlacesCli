@@ -1,6 +1,7 @@
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Colors } from '../../constants/colors';
+import { Spacing } from '../../constants/spacing';
 import { Place } from '../../models/place';
 
 interface PlaceItemProps {
@@ -28,7 +29,7 @@ const styles = StyleSheet.create({
   item: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginVertical: 12,
+    marginVertical: Spacing.lg,
     backgroundColor: Colors.primary500,
     borderRadius: 6,
     elevation: 2,
@@ -51,7 +52,7 @@ const styles = StyleSheet.create({
 
   infoContainer: {
     flex: 2,
-    padding: 12,
+    padding: Spacing.lg,
   },
 
   title: {

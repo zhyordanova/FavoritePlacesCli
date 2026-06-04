@@ -16,7 +16,7 @@ import AllPlaces from './src/screens/AllPlaces';
 import AddPlace from './src/screens/AddPlace';
 import Map from './src/screens/Map';
 import PlaceDetails from './src/screens/PlaceDetails';
-import IconButton from './src/components/UI/IconButton';
+import IconButton from './src/components/ui/IconButton';
 import { Colors } from './src/constants/colors';
 import { RootStackParamList } from './src/types/navigation';
 import { initializeMapbox } from './src/util/mapbox';
@@ -28,6 +28,20 @@ const stackScreenOptions = {
   headerTintColor: Colors.gray700,
   contentStyle: { backgroundColor: Colors.primary50 },
 };
+
+function renderAddPlaceHeaderButton(
+  tintColor: string | undefined,
+  onPress: () => void,
+) {
+  return (
+    <IconButton
+      icon="add-outline"
+      size={24}
+      color={tintColor}
+      onPress={onPress}
+    />
+  );
+}
 
 export default function App() {
   const [isAppReady, setIsAppReady] = useState(false);
@@ -91,14 +105,10 @@ export default function App() {
             component={AllPlaces}
             options={({ navigation }) => ({
               title: 'All Places',
-              headerRight: ({ tintColor }) => (
-                <IconButton
-                  icon="add-outline"
-                  size={24}
-                  color={tintColor}
-                  onClick={() => navigation.navigate('AddPlace')}
-                />
-              ),
+              headerRight: ({ tintColor }) =>
+                renderAddPlaceHeaderButton(tintColor, () =>
+                  navigation.navigate('AddPlace'),
+                ),
             })}
           />
           <Stack.Screen

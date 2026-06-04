@@ -2,6 +2,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
 
 import { Colors } from '../../constants/colors';
+import { Spacing } from '../../constants/spacing';
 
 interface OutlinedButtonProps {
   onPress: () => void;
@@ -46,10 +47,10 @@ export default function OutlinedButton({
 
 const styles = StyleSheet.create({
   button: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    marginVertical: 12,
-    marginHorizontal: 24,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.lg,
+    marginVertical: Spacing.lg,
+    marginHorizontal: Spacing.xxl,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -71,7 +72,7 @@ const styles = StyleSheet.create({
   },
 
   icon: {
-    marginRight: 6,
+    marginRight: Spacing.sm,
   },
 
   buttonText: {

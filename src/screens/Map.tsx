@@ -19,15 +19,30 @@ import Mapbox, { type ScreenPointPayload } from '@rnmapbox/maps';
 
 import { RootStackParamList } from '../types/navigation';
 
-import IconButton from '../components/UI/IconButton';
-import LocationMarker from '../components/UI/LocationMarker';
-import MarkerGenerator from '../components/UI/MarkerGenerator';
+import IconButton from '../components/ui/IconButton';
+import LocationMarker from '../components/ui/LocationMarker';
+import MarkerGenerator from '../components/ui/MarkerGenerator';
 import { useMarkerImage } from '../hooks/useMarkerImage';
 import { setPickedMapLocation } from '../store/picked-location-store';
 import { fetchPlaceDetails } from '../util/database';
 import { Colors } from '../constants/colors';
+import { Spacing } from '../constants/spacing';
 
 const DEFAULT_CENTER: [number, number] = [-122.4324, 37.78825];
+
+function renderSaveLocationHeaderButton(
+  tintColor: string | undefined,
+  onPress: () => void,
+) {
+  return (
+    <IconButton
+      icon="save-outline"
+      size={24}
+      color={tintColor}
+      onPress={onPress}
+    />
+  );
+}
 
 export default function Map() {
   const navigation =
@@ -207,14 +222,9 @@ export default function Map() {
     navigation.setOptions({
       title: 'Map',
       headerRight: ({ tintColor }) =>
-        selectedLocation && !initialLocation ? (
-          <IconButton
-            icon="save-outline"
-            size={24}
-            color={tintColor}
-            onClick={savePickedLocationHandler}
-          />
-        ) : null,
+        selectedLocation && !initialLocation
+          ? renderSaveLocationHeaderButton(tintColor, savePickedLocationHandler)
+          : null,
     });
   }, [
     navigation,
@@ -302,16 +312,16 @@ const styles = StyleSheet.create({
   },
 
   mapLoadingText: {
-    marginTop: 12,
+    marginTop: Spacing.lg,
     color: Colors.primary500,
     fontSize: 14,
     textAlign: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: Spacing.xxl,
   },
 
   retryButton: {
-    marginTop: 12,
-    paddingVertical: 8,
+    marginTop: Spacing.lg,
+    paddingVertical: Spacing.md,
     paddingHorizontal: 14,
     borderRadius: 6,
     borderWidth: 1,
