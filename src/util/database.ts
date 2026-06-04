@@ -47,6 +47,10 @@ export async function init(): Promise<void> {
   await db.execute(
     `UPDATE places SET createdAt = CAST(strftime('%s', 'now') AS INTEGER) WHERE createdAt IS NULL OR createdAt = 0`,
   );
+
+  await db.execute(
+    `CREATE INDEX IF NOT EXISTS idx_places_createdAt ON places(createdAt DESC)`,
+  );
 }
 
 export async function insertPlace(place: Place): Promise<void> {
@@ -66,7 +70,9 @@ export async function insertPlace(place: Place): Promise<void> {
 
 export async function fetchPlaces(): Promise<Place[]> {
   const result = await db.execute(
-    `SELECT * FROM places ORDER BY createdAt DESC`,
+    `SELECT id, title, imageUri, address, lat, lng
+     FROM places
+     ORDER BY createdAt DESC, rowid DESC`,
   );
   const rows = (result.rows ?? []) as unknown as PlaceRow[];
 
@@ -74,7 +80,12 @@ export async function fetchPlaces(): Promise<Place[]> {
 }
 
 export async function fetchPlaceDetails(id: string): Promise<Place> {
-  const result = await db.execute(`SELECT * FROM places WHERE id = ?`, [id]);
+  const result = await db.execute(
+    `SELECT id, title, imageUri, address, lat, lng
+     FROM places
+     WHERE id = ?`,
+    [id],
+  );
   const row = (result.rows?.[0] ?? null) as unknown as PlaceRow | null;
 
   if (!row) {

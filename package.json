@@ -9,7 +9,8 @@
     "format:check": "prettier --check \"App.tsx\" \"index.js\" \"src/**/*.{ts,tsx,js,jsx}\"",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@op-engineering/op-sqlite": "^15.2.12",
