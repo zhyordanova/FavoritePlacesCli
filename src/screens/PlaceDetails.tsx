@@ -1,22 +1,16 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useCallback, useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { useEffect } from 'react';
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { RootStackParamList } from '../types/navigation';
 
+import ScreenErrorState from '../components/ui/ScreenErrorState';
+import ScreenLoadingState from '../components/ui/ScreenLoadingState';
 import OutlinedButton from '../components/ui/OutlinedButton';
 import { Colors } from '../constants/colors';
 import { Spacing } from '../constants/spacing';
-import { fetchPlaceDetails } from '../util/database';
-import { Place } from '../models/place';
+import { usePlaceDetails } from '../hooks/usePlaceDetails';
 
 export default function PlaceDetails() {
   const navigation =
@@ -25,9 +19,12 @@ export default function PlaceDetails() {
     >();
   const route = useRoute<RouteProp<RootStackParamList, 'PlaceDetails'>>();
   const { placeId } = route.params;
-  const [fetchedPlace, setFetchedPlace] = useState<Place | undefined>();
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const {
+    place: fetchedPlace,
+    isLoading,
+    errorMessage,
+    reload: loadPlaceData,
+  } = usePlaceDetails(placeId);
 
   function showOnMapHandler() {
     if (!fetchedPlace) return;
@@ -39,25 +36,6 @@ export default function PlaceDetails() {
     });
   }
 
-  const loadPlaceData = useCallback(async () => {
-    setIsLoading(true);
-    setErrorMessage(null);
-
-    try {
-      const place = await fetchPlaceDetails(placeId);
-      setFetchedPlace(place);
-    } catch {
-      setErrorMessage('Could not load place details. Please try again.');
-      setFetchedPlace(undefined);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [placeId]);
-
-  useEffect(() => {
-    loadPlaceData();
-  }, [loadPlaceData]);
-
   useEffect(() => {
     navigation.setOptions({
       title: fetchedPlace ? fetchedPlace.title : 'Place Details',
@@ -65,30 +43,15 @@ export default function PlaceDetails() {
   }, [navigation, fetchedPlace]);
 
   if (isLoading) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color={Colors.primary500} />
-      </View>
-    );
+    return <ScreenLoadingState />;
   }
 
   if (errorMessage) {
-    return (
-      <View style={styles.centered}>
-        <Text style={styles.errorText}>{errorMessage}</Text>
-        <OutlinedButton icon="refresh-outline" onPress={loadPlaceData}>
-          Retry
-        </OutlinedButton>
-      </View>
-    );
+    return <ScreenErrorState message={errorMessage} onRetry={loadPlaceData} />;
   }
 
   if (!fetchedPlace) {
-    return (
-      <View style={styles.centered}>
-        <Text style={styles.errorText}>Place not found.</Text>
-      </View>
-    );
+    return <ScreenErrorState message="Place not found." />;
   }
 
   return (
@@ -111,13 +74,6 @@ export default function PlaceDetails() {
 }
 
 const styles = StyleSheet.create({
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.xxl,
-  },
-
   image: {
     height: '35%',
     minHeight: 300,
@@ -138,11 +94,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold',
     fontSize: 16,
-  },
-
-  errorText: {
-    color: Colors.primary500,
-    fontSize: 16,
-    textAlign: 'center',
   },
 });

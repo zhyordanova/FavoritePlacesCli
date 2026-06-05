@@ -23,8 +23,8 @@ import IconButton from '../components/ui/IconButton';
 import LocationMarker from '../components/ui/LocationMarker';
 import MarkerGenerator from '../components/ui/MarkerGenerator';
 import { useMarkerImage } from '../hooks/useMarkerImage';
+import { usePlaceDetails } from '../hooks/usePlaceDetails';
 import { setPickedMapLocation } from '../store/picked-location-store';
-import { fetchPlaceDetails } from '../util/database';
 import { Colors } from '../constants/colors';
 import { Spacing } from '../constants/spacing';
 
@@ -66,6 +66,9 @@ export default function Map() {
   const loadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const readyDelayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const { place: markerPlace, errorMessage: placeErrorMessage } =
+    usePlaceDetails(placeId, { autoLoad: !!placeId });
+
   const markMapAsReady = useCallback(() => {
     // Clear any pending ready timer
     if (readyDelayTimerRef.current) {
@@ -87,21 +90,24 @@ export default function Map() {
   }, []);
 
   useEffect(() => {
-    if (!placeId) return;
+    if (!markerPlace?.imageUri) {
+      return;
+    }
 
-    fetchPlaceDetails(placeId)
-      .then(place => {
-        if (!place?.imageUri) return;
-        setImageUri(place.imageUri);
-      })
-      .catch(() => {
-        setMarkerCaptureFailed(true);
-        Alert.alert(
-          'Marker Image Unavailable',
-          'Could not load the place image for the map marker.',
-        );
-      });
-  }, [placeId]);
+    setImageUri(markerPlace.imageUri);
+  }, [markerPlace?.imageUri]);
+
+  useEffect(() => {
+    if (!placeErrorMessage || !placeId) {
+      return;
+    }
+
+    setMarkerCaptureFailed(true);
+    Alert.alert(
+      'Marker Image Unavailable',
+      'Could not load the place image for the map marker.',
+    );
+  }, [placeErrorMessage, placeId]);
 
   useEffect(() => {
     setMarkerCaptureFailed(false);

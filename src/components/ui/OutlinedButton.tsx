@@ -9,6 +9,7 @@ interface OutlinedButtonProps {
   icon: React.ComponentProps<typeof Ionicons>['name'];
   children: React.ReactNode;
   disabled?: boolean;
+  showSpinnerWhenDisabled?: boolean;
 }
 
 export default function OutlinedButton({
@@ -16,7 +17,10 @@ export default function OutlinedButton({
   icon,
   children,
   disabled,
+  showSpinnerWhenDisabled = true,
 }: OutlinedButtonProps) {
+  const shouldShowSpinner = !!disabled && showSpinnerWhenDisabled;
+
   return (
     <Pressable
       style={({ pressed }) => [
@@ -27,7 +31,7 @@ export default function OutlinedButton({
       onPress={onPress}
       disabled={disabled}
     >
-      {disabled ? (
+      {shouldShowSpinner ? (
         <ActivityIndicator size={18} color={Colors.primary500} />
       ) : (
         <Ionicons

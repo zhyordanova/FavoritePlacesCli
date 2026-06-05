@@ -19,7 +19,10 @@ import { Spacing } from '../../constants/spacing';
 import { consumePickedMapLocation } from '../../store/picked-location-store';
 import { Location } from '../../types';
 import { getAddress, getMapPreview } from '../../util/location';
-import { openAppSettings, showOpenSettingsAlert } from '../../util/permissions';
+import {
+  ensureLocationPermission,
+  openAppSettings,
+} from '../../util/permissions';
 import { RootStackParamList } from '../../types/navigation';
 
 interface LocationPickerProps {
@@ -67,48 +70,9 @@ export default function LocationPicker({
   );
 
   async function verifiedPermissions(): Promise<boolean> {
-    if (Platform.OS === 'ios') {
-      const status = await Geolocation.requestAuthorization('whenInUse');
-      if (status === 'granted') {
-        return true;
-      }
-
-      showOpenSettingsAlert(
-        'Please enable location access in Settings to continue.',
-      );
-      return false;
-    }
-
-    const finePermission = PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION;
-    const coarsePermission =
-      PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION;
-
-    const alreadyHasFine = await PermissionsAndroid.check(finePermission);
-    const alreadyHasCoarse = await PermissionsAndroid.check(coarsePermission);
-
-    if (alreadyHasFine || alreadyHasCoarse) {
-      return true;
-    }
-
-    const granted = await PermissionsAndroid.requestMultiple([
-      finePermission,
-      coarsePermission,
-    ]);
-
-    const fineResult = granted[finePermission];
-    const coarseResult = granted[coarsePermission];
-
-    if (
-      fineResult === PermissionsAndroid.RESULTS.GRANTED ||
-      coarseResult === PermissionsAndroid.RESULTS.GRANTED
-    ) {
-      return true;
-    }
-
-    showOpenSettingsAlert(
+    return ensureLocationPermission(
       'Please enable location access in Settings to continue.',
     );
-    return false;
   }
 
   async function getLocationHandler(): Promise<void> {
@@ -221,6 +185,7 @@ export default function LocationPicker({
           icon="location-outline"
           onPress={getLocationHandler}
           disabled={isLoadingLocation}
+          showSpinnerWhenDisabled={false}
         >
           {isLoadingLocation ? 'Locating...' : 'Locate User'}
         </OutlinedButton>

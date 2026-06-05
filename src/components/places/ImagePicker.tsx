@@ -7,8 +7,6 @@ import {
 import {
   Alert,
   Image,
-  PermissionsAndroid,
-  Platform,
   StyleSheet,
   Text,
   View,
@@ -17,7 +15,10 @@ import {
 import OutlinedButton from '../ui/OutlinedButton';
 import { sharedPickerStyles } from '../../constants/sharedStyles';
 import { CAMERA_OPTIONS } from '../../constants/imagePicker';
-import { showOpenSettingsAlert } from '../../util/permissions';
+import {
+  ensureCameraPermission,
+  showOpenSettingsAlert,
+} from '../../util/permissions';
 
 interface ImagePickerProps {
   onTakeImage: (uri: string) => void;
@@ -61,12 +62,8 @@ export default function ImagePicker({
   }
 
   async function verifyCameraPermissions(): Promise<boolean> {
-    if (Platform.OS !== 'android') {
-      return true;
-    }
-
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.CAMERA,
+    return ensureCameraPermission(
+      'Please enable camera access in Settings to continue.',
       {
         title: 'Camera Permission Required',
         message: 'You need to allow camera access to take a photo.',
@@ -74,22 +71,6 @@ export default function ImagePicker({
         buttonNegative: 'Deny',
       },
     );
-
-    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      return true;
-    }
-
-    if (granted === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
-      showOpenSettingsAlert(
-        'Please enable camera access in Settings to continue.',
-      );
-      return false;
-    }
-
-    showOpenSettingsAlert(
-      'Please enable camera access in Settings to continue.',
-    );
-    return false;
   }
 
   async function takeImageHandler(): Promise<void> {

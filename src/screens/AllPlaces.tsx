@@ -1,32 +1,22 @@
 import { useFocusEffect } from '@react-navigation/native';
-import { useCallback, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { useCallback } from 'react';
 
 import PlacesList from '../components/places/PlacesList';
-import OutlinedButton from '../components/ui/OutlinedButton';
-import { Colors } from '../constants/colors';
-import { Spacing } from '../constants/spacing';
+import ScreenErrorState from '../components/ui/ScreenErrorState';
+import ScreenLoadingState from '../components/ui/ScreenLoadingState';
+import { useAsyncResource } from '../hooks/useAsyncResource';
 import { fetchPlaces } from '../util/database';
-import { Place } from '../models/place';
 
 export default function AllPlaces() {
-  const [loadedPlaces, setLoadedPlaces] = useState<Place[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  const loadPlaces = useCallback(async () => {
-    setIsLoading(true);
-    setErrorMessage(null);
-
-    try {
-      const places = await fetchPlaces();
-      setLoadedPlaces(places);
-    } catch {
-      setErrorMessage('Could not load places. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const {
+    data: loadedPlaces,
+    isLoading,
+    errorMessage,
+    reload: loadPlaces,
+  } = useAsyncResource(fetchPlaces, {
+    initialData: [],
+    errorMessage: 'Could not load places. Please try again.',
+  });
 
   useFocusEffect(
     useCallback(() => {
@@ -35,38 +25,12 @@ export default function AllPlaces() {
   );
 
   if (isLoading) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color={Colors.primary500} />
-      </View>
-    );
+    return <ScreenLoadingState />;
   }
 
   if (errorMessage) {
-    return (
-      <View style={styles.centered}>
-        <Text style={styles.errorText}>{errorMessage}</Text>
-        <OutlinedButton icon="refresh-outline" onPress={loadPlaces}>
-          Retry
-        </OutlinedButton>
-      </View>
-    );
+    return <ScreenErrorState message={errorMessage} onRetry={loadPlaces} />;
   }
 
   return <PlacesList places={loadedPlaces} />;
 }
-
-const styles = StyleSheet.create({
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.xxl,
-  },
-
-  errorText: {
-    color: Colors.primary500,
-    fontSize: 16,
-    textAlign: 'center',
-  },
-});
