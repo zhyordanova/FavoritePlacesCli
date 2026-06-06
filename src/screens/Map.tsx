@@ -28,6 +28,10 @@ import { usePickedLocationContext } from '../store/picked-location-context';
 import { Colors } from '../constants/colors';
 import { Spacing } from '../constants/spacing';
 import { logAppError, showUserErrorAlert } from '../util/errors';
+import {
+  getMapboxUnavailableReason,
+  isMapboxAvailable,
+} from '../util/mapbox';
 
 const DEFAULT_CENTER: [number, number] = [-122.4324, 37.78825];
 
@@ -67,6 +71,7 @@ export default function Map() {
   const loadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const readyDelayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { setPickedMapLocation } = usePickedLocationContext();
+  const mapFeatureAvailable = isMapboxAvailable();
 
   const { place: markerPlace, errorMessage: placeErrorMessage } =
     usePlaceDetails(placeId, { autoLoad: !!placeId });
@@ -228,16 +233,28 @@ export default function Map() {
     navigation.setOptions({
       title: 'Map',
       headerRight: ({ tintColor }) =>
-        selectedLocation && !initialLocation
+        mapFeatureAvailable && selectedLocation && !initialLocation
           ? renderSaveLocationHeaderButton(tintColor, savePickedLocationHandler)
           : null,
     });
   }, [
+    mapFeatureAvailable,
     navigation,
     selectedLocation,
     initialLocation,
     savePickedLocationHandler,
   ]);
+
+  if (!mapFeatureAvailable) {
+    return (
+      <View style={styles.mapUnavailableContainer}>
+        <Text style={styles.mapUnavailableTitle}>Map Unavailable</Text>
+        <Text style={styles.mapUnavailableText}>
+          {getMapboxUnavailableReason()}
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <>
@@ -342,5 +359,27 @@ const styles = StyleSheet.create({
   retryButtonText: {
     color: Colors.primary500,
     fontWeight: '600',
+  },
+
+  mapUnavailableContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.xxl,
+    backgroundColor: Colors.primary50,
+  },
+
+  mapUnavailableTitle: {
+    color: Colors.primary500,
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: Spacing.md,
+    textAlign: 'center',
+  },
+
+  mapUnavailableText: {
+    color: Colors.gray700,
+    fontSize: 16,
+    textAlign: 'center',
   },
 });

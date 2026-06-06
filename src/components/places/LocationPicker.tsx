@@ -21,6 +21,10 @@ import { Location } from '../../types';
 import { logAppError, showUserErrorAlert } from '../../util/errors';
 import { getAddress, getMapPreview } from '../../util/location';
 import {
+  getMapboxUnavailableReason,
+  isMapboxAvailable,
+} from '../../util/mapbox';
+import {
   ensureLocationPermission,
   openAppSettings,
 } from '../../util/permissions';
@@ -39,6 +43,7 @@ export default function LocationPicker({
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+  const mapFeatureAvailable = isMapboxAvailable();
 
   useFocusEffect(
     useCallback(() => {
@@ -154,8 +159,17 @@ export default function LocationPicker({
   }
 
   function pickOnMapHandler(): void {
+    if (!mapFeatureAvailable) {
+      Alert.alert('Map Unavailable', getMapboxUnavailableReason());
+      return;
+    }
+
     navigation.navigate('Map');
   }
+
+  const mapPreviewUri = pickedLocation
+    ? getMapPreview(pickedLocation.lat, pickedLocation.lng)
+    : null;
 
   let locationPreview = (
     <Text style={sharedPickerStyles.statusText}>No location picked yet.</Text>
@@ -168,14 +182,20 @@ export default function LocationPicker({
         <Text style={sharedPickerStyles.statusText}>Fetching location...</Text>
       </View>
     );
-  } else if (pickedLocation) {
+  } else if (pickedLocation && mapPreviewUri) {
     locationPreview = (
       <Image
         style={styles.mapImage}
         source={{
-          uri: getMapPreview(pickedLocation.lat, pickedLocation.lng),
+          uri: mapPreviewUri,
         }}
       />
+    );
+  } else if (pickedLocation) {
+    locationPreview = (
+      <Text style={sharedPickerStyles.statusText}>
+        {getMapboxUnavailableReason()}
+      </Text>
     );
   }
 
@@ -192,8 +212,13 @@ export default function LocationPicker({
           {isLoadingLocation ? 'Locating...' : 'Locate User'}
         </OutlinedButton>
 
-        <OutlinedButton icon="map-outline" onPress={pickOnMapHandler}>
-          Pick on Map
+        <OutlinedButton
+          icon="map-outline"
+          onPress={pickOnMapHandler}
+          disabled={!mapFeatureAvailable}
+          showSpinnerWhenDisabled={false}
+        >
+          {mapFeatureAvailable ? 'Pick on Map' : 'Map Unavailable'}
         </OutlinedButton>
       </View>
     </View>

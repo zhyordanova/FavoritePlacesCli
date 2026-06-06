@@ -1,11 +1,23 @@
-import { getMapboxAccessToken } from './mapbox';
+import {
+  getMapboxAccessToken,
+  getMapboxUnavailableReason,
+  isMapboxAvailable,
+} from './mapbox';
 
-export function getMapPreview(lat: number, lng: number): string {
+export function getMapPreview(lat: number, lng: number): string | null {
+  if (!isMapboxAvailable()) {
+    return null;
+  }
+
   const token = getMapboxAccessToken();
   return `https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-s+ff0000(${lng},${lat})/${lng},${lat},14/400x200?access_token=${token}`;
 }
 
 export async function getAddress(lat: number, lng: number): Promise<string> {
+  if (!isMapboxAvailable()) {
+    throw new Error(getMapboxUnavailableReason());
+  }
+
   const token = getMapboxAccessToken();
   const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${token}`;
 
