@@ -28,7 +28,6 @@ Short demo recordings of the app running on both platforms.
 
 #### iOS
 <img src="./assets/readme/demo-ios.gif" alt="iOS Demo" width="320" />
-![iOS Demo]()
 
 #### Android
 <img src="./assets/readme/demo-android.gif" alt="Android Demo" width="320" />
@@ -262,8 +261,6 @@ The app uses **Mapbox** for:
 - reverse geocoding coordinates into an address
 
 Mapbox configuration is centralized and initialized during app bootstrap.
-
----
 
 ---
 
