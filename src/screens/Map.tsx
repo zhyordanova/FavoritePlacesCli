@@ -27,6 +27,7 @@ import { usePlaceDetails } from '../hooks/usePlaceDetails';
 import { usePickedLocationContext } from '../store/picked-location-context';
 import { Colors } from '../constants/colors';
 import { Spacing } from '../constants/spacing';
+import { logAppError, showUserErrorAlert } from '../util/errors';
 
 const DEFAULT_CENTER: [number, number] = [-122.4324, 37.78825];
 
@@ -104,10 +105,8 @@ export default function Map() {
     }
 
     setMarkerCaptureFailed(true);
-    Alert.alert(
-      'Marker Image Unavailable',
-      'Could not load the place image for the map marker.',
-    );
+    logAppError('map.markerImage', placeErrorMessage, { placeId });
+    showUserErrorAlert('map.markerImage', 'Marker Image Unavailable');
   }, [placeErrorMessage, placeId]);
 
   useEffect(() => {

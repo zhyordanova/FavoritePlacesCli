@@ -20,6 +20,7 @@ import IconButton from './src/components/ui/IconButton';
 import { Colors } from './src/constants/colors';
 import { PickedLocationProvider } from './src/store/picked-location-context';
 import { RootStackParamList } from './src/types/navigation';
+import { getUserErrorMessage, logAppError } from './src/util/errors';
 import { initializeMapbox } from './src/util/mapbox';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -62,12 +63,13 @@ export default function App() {
 
         setIsAppReady(true);
         await BootSplash.hide({ fade: true });
-      } catch {
+      } catch (error) {
         if (!isMounted) {
           return;
         }
 
-        setBootstrapError('Failed to initialize the app. Please restart it.');
+        logAppError('app.bootstrap', error);
+        setBootstrapError(getUserErrorMessage('app.bootstrap'));
         await BootSplash.hide({ fade: true });
       }
     }

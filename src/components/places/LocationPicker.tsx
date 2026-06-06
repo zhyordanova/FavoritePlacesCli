@@ -18,6 +18,7 @@ import { sharedPickerStyles } from '../../constants/sharedStyles';
 import { Spacing } from '../../constants/spacing';
 import { usePickedLocationContext } from '../../store/picked-location-context';
 import { Location } from '../../types';
+import { logAppError, showUserErrorAlert } from '../../util/errors';
 import { getAddress, getMapPreview } from '../../util/location';
 import {
   ensureLocationPermission,
@@ -55,10 +56,14 @@ export default function LocationPicker({
             mapPickedLocation.lat,
             mapPickedLocation.lng,
           );
-        } catch {
-          Alert.alert(
+        } catch (error) {
+          logAppError('location.mapPickGeocoding', error, {
+            lat: mapPickedLocation.lat,
+            lng: mapPickedLocation.lng,
+          });
+          showUserErrorAlert(
+            'location.mapPickGeocoding',
             'Geocoding Failed',
-            'Could not retrieve the address for the selected location.',
           );
           return;
         }
@@ -67,7 +72,7 @@ export default function LocationPicker({
       }
 
       storePickedLocation();
-    }, [onPickLocation]),
+    }, [consumePickedMapLocation, onPickLocation]),
   );
 
   async function verifiedPermissions(): Promise<boolean> {
@@ -121,11 +126,9 @@ export default function LocationPicker({
             },
           );
         });
-      } catch {
-        Alert.alert(
-          'Location Unavailable',
-          'Could not fetch your location. Make sure location services are enabled on your device.',
-        );
+      } catch (error) {
+        logAppError('location.currentPosition', error);
+        showUserErrorAlert('location.currentPosition', 'Location Unavailable');
         return;
       }
 
@@ -138,11 +141,9 @@ export default function LocationPicker({
 
       try {
         address = await getAddress(currentLocation.lat, currentLocation.lng);
-      } catch {
-        Alert.alert(
-          'Geocoding Failed',
-          'Could not retrieve the address for your location.',
-        );
+      } catch (error) {
+        logAppError('location.currentGeocoding', error, currentLocation);
+        showUserErrorAlert('location.currentGeocoding', 'Geocoding Failed');
         return;
       }
 
