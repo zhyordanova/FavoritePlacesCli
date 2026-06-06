@@ -18,6 +18,7 @@ import Map from './src/screens/Map';
 import PlaceDetails from './src/screens/PlaceDetails';
 import IconButton from './src/components/ui/IconButton';
 import { Colors } from './src/constants/colors';
+import { PickedLocationProvider } from './src/store/picked-location-context';
 import { RootStackParamList } from './src/types/navigation';
 import { initializeMapbox } from './src/util/mapbox';
 
@@ -98,32 +99,38 @@ export default function App() {
   return (
     <>
       <StatusBar />
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={stackScreenOptions}>
-          <Stack.Screen
-            name="AllPlaces"
-            component={AllPlaces}
-            options={({ navigation }) => ({
-              title: 'All Places',
-              headerRight: ({ tintColor }) =>
-                renderAddPlaceHeaderButton(tintColor, () =>
-                  navigation.navigate('AddPlace'),
-                ),
-            })}
-          />
-          <Stack.Screen
-            name="AddPlace"
-            component={AddPlace}
-            options={{ title: 'Add a new place' }}
-          />
-          <Stack.Screen name="Map" component={Map} options={{ title: 'Map' }} />
-          <Stack.Screen
-            name="PlaceDetails"
-            component={PlaceDetails}
-            options={{ title: 'Loading Place' }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <PickedLocationProvider>
+        <NavigationContainer>
+          <Stack.Navigator screenOptions={stackScreenOptions}>
+            <Stack.Screen
+              name="AllPlaces"
+              component={AllPlaces}
+              options={({ navigation }) => ({
+                title: 'All Places',
+                headerRight: ({ tintColor }) =>
+                  renderAddPlaceHeaderButton(tintColor, () =>
+                    navigation.navigate('AddPlace'),
+                  ),
+              })}
+            />
+            <Stack.Screen
+              name="AddPlace"
+              component={AddPlace}
+              options={{ title: 'Add a new place' }}
+            />
+            <Stack.Screen
+              name="Map"
+              component={Map}
+              options={{ title: 'Map' }}
+            />
+            <Stack.Screen
+              name="PlaceDetails"
+              component={PlaceDetails}
+              options={{ title: 'Loading Place' }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </PickedLocationProvider>
     </>
   );
 }

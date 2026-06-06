@@ -24,7 +24,7 @@ import LocationMarker from '../components/ui/LocationMarker';
 import MarkerGenerator from '../components/ui/MarkerGenerator';
 import { useMarkerImage } from '../hooks/useMarkerImage';
 import { usePlaceDetails } from '../hooks/usePlaceDetails';
-import { setPickedMapLocation } from '../store/picked-location-store';
+import { usePickedLocationContext } from '../store/picked-location-context';
 import { Colors } from '../constants/colors';
 import { Spacing } from '../constants/spacing';
 
@@ -65,6 +65,7 @@ export default function Map() {
   const mountDelayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const loadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const readyDelayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { setPickedMapLocation } = usePickedLocationContext();
 
   const { place: markerPlace, errorMessage: placeErrorMessage } =
     usePlaceDetails(placeId, { autoLoad: !!placeId });

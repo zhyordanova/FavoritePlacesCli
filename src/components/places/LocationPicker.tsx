@@ -16,7 +16,7 @@ import {
 import OutlinedButton from '../ui/OutlinedButton';
 import { sharedPickerStyles } from '../../constants/sharedStyles';
 import { Spacing } from '../../constants/spacing';
-import { consumePickedMapLocation } from '../../store/picked-location-store';
+import { usePickedLocationContext } from '../../store/picked-location-context';
 import { Location } from '../../types';
 import { getAddress, getMapPreview } from '../../util/location';
 import {
@@ -34,6 +34,7 @@ export default function LocationPicker({
   onPickLocation,
   pickedLocation,
 }: LocationPickerProps) {
+  const { consumePickedMapLocation } = usePickedLocationContext();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
