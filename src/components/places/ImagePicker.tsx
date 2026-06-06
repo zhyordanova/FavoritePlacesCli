@@ -15,10 +15,8 @@ import {
 import OutlinedButton from '../ui/OutlinedButton';
 import { sharedPickerStyles } from '../../constants/sharedStyles';
 import { CAMERA_OPTIONS } from '../../constants/imagePicker';
-import {
-  ensureCameraPermission,
-  showOpenSettingsAlert,
-} from '../../util/permissions';
+import { usePermission } from '../../hooks/usePermission';
+import { showOpenSettingsAlert } from '../../util/permissions';
 
 interface ImagePickerProps {
   onTakeImage: (uri: string) => void;
@@ -29,6 +27,17 @@ export default function ImagePicker({
   onTakeImage,
   selectedImage,
 }: ImagePickerProps) {
+  const { request: requestCameraPermission } = usePermission({
+    resource: 'camera',
+    settingsMessage: 'Please enable camera access in Settings to continue.',
+    cameraRationale: {
+      title: 'Camera Permission Required',
+      message: 'You need to allow camera access to take a photo.',
+      buttonPositive: 'Allow',
+      buttonNegative: 'Deny',
+    },
+  });
+
   async function processImageResult(
     image: ImagePickerResponse,
     saveToLibrary: boolean,
@@ -61,21 +70,9 @@ export default function ImagePicker({
     }
   }
 
-  async function verifyCameraPermissions(): Promise<boolean> {
-    return ensureCameraPermission(
-      'Please enable camera access in Settings to continue.',
-      {
-        title: 'Camera Permission Required',
-        message: 'You need to allow camera access to take a photo.',
-        buttonPositive: 'Allow',
-        buttonNegative: 'Deny',
-      },
-    );
-  }
-
   async function takeImageHandler(): Promise<void> {
-    const hasPermission = await verifyCameraPermissions();
-    if (!hasPermission) {
+    const permissionStatus = await requestCameraPermission();
+    if (permissionStatus !== 'granted') {
       return;
     }
 

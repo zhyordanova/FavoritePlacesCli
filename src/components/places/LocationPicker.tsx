@@ -16,6 +16,7 @@ import {
 import OutlinedButton from '../ui/OutlinedButton';
 import { sharedPickerStyles } from '../../constants/sharedStyles';
 import { Spacing } from '../../constants/spacing';
+import { usePermission } from '../../hooks/usePermission';
 import { usePickedLocationContext } from '../../store/picked-location-context';
 import { Location } from '../../types';
 import { logAppError, showUserErrorAlert } from '../../util/errors';
@@ -24,10 +25,7 @@ import {
   getMapboxUnavailableReason,
   isMapboxAvailable,
 } from '../../util/mapbox';
-import {
-  ensureLocationPermission,
-  openAppSettings,
-} from '../../util/permissions';
+import { openAppSettings } from '../../util/permissions';
 import { RootStackParamList } from '../../types/navigation';
 
 interface LocationPickerProps {
@@ -44,6 +42,10 @@ export default function LocationPicker({
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const mapFeatureAvailable = isMapboxAvailable();
+  const { request: requestLocationPermission } = usePermission({
+    resource: 'location',
+    settingsMessage: 'Please enable location access in Settings to continue.',
+  });
 
   useFocusEffect(
     useCallback(() => {
@@ -80,18 +82,11 @@ export default function LocationPicker({
     }, [consumePickedMapLocation, onPickLocation]),
   );
 
-  async function verifiedPermissions(): Promise<boolean> {
-    return ensureLocationPermission(
-      'Please enable location access in Settings to continue.',
-    );
-  }
-
   async function getLocationHandler(): Promise<void> {
     setIsLoadingLocation(true);
     try {
-      const hasPermission = await verifiedPermissions();
-
-      if (!hasPermission) {
+      const permissionStatus = await requestLocationPermission();
+      if (permissionStatus !== 'granted') {
         return;
       }
 
