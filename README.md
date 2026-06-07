@@ -6,6 +6,8 @@ A React Native CLI mobile app for **iOS** and **Android** that lets users save f
 
 Built with **React Native CLI**, **TypeScript**, **SQLite**, and **Mapbox**, the project demonstrates native mobile integrations such as **camera/gallery access**, **location permissions**, **map-based place selection**, and **offline local persistence**.
 
+The current implementation also includes a small **context-based map location handoff**, **centralized error logging/user messaging**, and a **graceful degraded mode** when the Mapbox token is missing.
+
 ---
 
 ## Preview
@@ -46,6 +48,7 @@ Short demo recordings of the app running on both platforms.
 - View saved places in a list and inspect them in a details screen
 - Open saved places on a **Mapbox** map
 - Handle loading, error, and retry states in important user flows
+- Keep map-related flows usable with clear fallbacks when **Mapbox** is not configured
 
 ---
 
@@ -78,15 +81,20 @@ Short demo recordings of the app running on both platforms.
   - permissions
   - local photo library
 - Interactive maps and reverse geocoding with **Mapbox**
+- A hybrid permission model: reusable permission helpers plus a UI-friendly `usePermission` hook
+- Context-based handoff for map-picked locations instead of a module-level singleton store
+- Centralized developer-facing error logging with separate user-facing error messages
 - Practical mobile UX work:
   - bootstrap initialization
   - loading states
   - retry actions
   - permission-denied flows
   - map loading fallback behavior
+  - graceful map unavailable states when configuration is missing
 - Basic project quality tooling with:
   - linting
   - formatting checks
+  - type checking
   - GitHub Actions CI
 
 ---
@@ -97,12 +105,12 @@ Short demo recordings of the app running on both platforms.
 src/
   components/   # Reusable UI and place-related components
   constants/    # Shared constants and styles
-  hooks/        # Custom hooks
+  hooks/        # Custom hooks (async state, place details, permissions)
   models/       # Domain models
   screens/      # Application screens
-  store/        # Lightweight temporary state utilities
+  store/        # Context-based lightweight shared state
   types/        # Shared TypeScript types
-  util/         # Database, location, permission, and Mapbox helpers
+  util/         # Database, location, permission, error, and Mapbox helpers
 ```
 
 ---
@@ -123,7 +131,7 @@ Used for:
 - selecting a location while creating a place
 - viewing an existing saved place on the map
 
-The screen includes loading handling and retry behavior to improve reliability around map initialization.
+The screen includes loading handling, retry behavior, and a graceful unavailable state when **Mapbox** is not configured.
 
 ### Place Details
 Shows:
@@ -146,7 +154,7 @@ Before running the project, make sure you have:
 - React Native environment set up
 - **Android Studio** for Android
 - **Xcode** and **CocoaPods** for iOS
-- a valid **Mapbox access token**
+- a valid **Mapbox access token** for full map functionality
 
 Official React Native setup guide:  
 https://reactnative.dev/docs/set-up-your-environment
@@ -164,6 +172,8 @@ MAPBOX_ACCESS_TOKEN=your_mapbox_access_token_here
 An `.env.example` file is included in the repository as a template.
 
 Get your token from [Mapbox](https://mapbox.com).
+
+Without this token, the app still launches, but map rendering, map picking, static previews, and reverse geocoding are intentionally unavailable.
 
 ---
 
@@ -235,6 +245,11 @@ The app may request:
 
 If permission is denied permanently, the app can guide the user to system settings.
 
+Permission handling uses a hybrid approach:
+- low-level platform-specific permission helpers in `src/util/permissions.ts`
+- a reusable `usePermission` hook for component-friendly permission requests
+- delayed settings guidance so the app does not immediately redirect users after the first explicit deny
+
 ---
 
 ## 📊 Data Storage
@@ -262,6 +277,8 @@ The app uses **Mapbox** for:
 
 Mapbox configuration is centralized and initialized during app bootstrap.
 
+If `MAPBOX_ACCESS_TOKEN` is missing, the app still starts. Map-related features switch to a degraded mode with clear user-facing messaging instead of failing during bootstrap.
+
 ---
 
 ## 🎓 Challenges and Lessons Learned
@@ -271,6 +288,8 @@ Some of the most interesting parts of the project were:
 - handling platform-specific permission behavior on Android and iOS
 - making the map screen more stable during loading and initialization
 - improving bootstrap reliability to avoid silent startup failures
+- separating developer-facing error logging from user-facing error messaging
+- replacing a temporary module-level location handoff with a React Context-based solution
 - integrating local device capabilities while keeping the codebase small and readable
 - balancing simplicity and clean architecture for a learning-focused app
 
@@ -278,10 +297,9 @@ Some of the most interesting parts of the project were:
 
 ## 🤔 Known Limitations
 
-- Requires a valid **Mapbox** token
+- Some map functionality requires a valid **Mapbox** token, although the app now starts in a degraded mode without it
 - Permission behavior can vary by platform and device version
 - Data is stored locally and is not synced to a backend
-- The map-picked location handoff uses a lightweight temporary in-memory store by design for this project’s learning scope
 - Automated test coverage is not a current focus of the project
 
 ---
@@ -306,6 +324,8 @@ Check that your `.env` file exists and contains a valid:
 MAPBOX_ACCESS_TOKEN=...
 ```
 
+Without a token, the app still launches, but map previews, map selection, and reverse geocoding are intentionally unavailable.
+
 ### iOS build issues
 Run:
 
@@ -321,6 +341,8 @@ npm run ios
 
 ### Permission issues
 Make sure camera, photo library, and location permissions are enabled for the app in device settings.
+
+If you deny a permission once, the app does not immediately force a settings redirect. On a repeated attempt, it can guide you to system settings when needed.
 
 ---
 
