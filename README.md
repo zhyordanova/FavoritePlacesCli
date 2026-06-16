@@ -349,6 +349,6 @@ If you deny a permission once, the app does not immediately force a settings red
 
 ## 👤 Author
 
-Created as a practical portfolio project demonstrating practical React Native architecture and mobile development best practices.
+Created as a portfolio project showcasing React Native CLI architecture, native integrations, and mobile development best practices..
 
 For questions or feature ideas, feel free to open an issue or reach out.
