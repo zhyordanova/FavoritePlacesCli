@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 
 import OutlinedButton from '../ui/OutlinedButton';
+import { ALERT_MESSAGES } from '../../constants/alertMessages';
 import { sharedPickerStyles } from '../../constants/sharedStyles';
 import { Spacing } from '../../constants/spacing';
 import { usePermission } from '../../hooks/usePermission';
@@ -44,7 +45,7 @@ export default function LocationPicker({
   const mapFeatureAvailable = isMapboxAvailable();
   const { request: requestLocationPermission } = usePermission({
     resource: 'location',
-    settingsMessage: 'Please enable location access in Settings to continue.',
+    settingsMessage: ALERT_MESSAGES.locationPicker.locationSettingsMessage,
   });
 
   useFocusEffect(
@@ -99,12 +100,15 @@ export default function LocationPicker({
 
       if (Platform.OS === 'android' && !hasFineOnAndroid) {
         Alert.alert(
-          'Approximate Location Active',
-          'Your device is currently sharing approximate location. Use Pick on Map, or enable Precise Location in Settings for Locate User.',
+          ALERT_MESSAGES.locationPicker.approximateLocationTitle,
+          ALERT_MESSAGES.locationPicker.approximateLocationMessage,
           [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Pick on Map', onPress: pickOnMapHandler },
-            { text: 'Open Settings', onPress: openAppSettings },
+            { text: ALERT_MESSAGES.common.cancelButton, style: 'cancel' },
+            {
+              text: ALERT_MESSAGES.locationPicker.pickOnMapButton,
+              onPress: pickOnMapHandler,
+            },
+            { text: ALERT_MESSAGES.common.openSettingsButton, onPress: openAppSettings },
           ],
         );
         return;
@@ -155,7 +159,10 @@ export default function LocationPicker({
 
   function pickOnMapHandler(): void {
     if (!mapFeatureAvailable) {
-      Alert.alert('Map Unavailable', getMapboxUnavailableReason());
+      Alert.alert(
+        ALERT_MESSAGES.locationPicker.mapUnavailableTitle,
+        getMapboxUnavailableReason(),
+      );
       return;
     }
 

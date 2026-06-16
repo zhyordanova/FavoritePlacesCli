@@ -7,6 +7,7 @@ import {
   Linking,
 } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
+import { ALERT_MESSAGES } from '../constants/alertMessages';
 
 const deniedPermissionAttempts = new Map<string, number>();
 
@@ -30,14 +31,17 @@ function getDeniedAttempts(permissionKey: string): number {
 
 export function openAppSettings(): void {
   Linking.openSettings().catch(() => {
-    Alert.alert('Error', 'Could not open app settings.');
+    Alert.alert(
+      ALERT_MESSAGES.common.errorTitle,
+      ALERT_MESSAGES.errors.openSettingsFailed,
+    );
   });
 }
 
 export function showOpenSettingsAlert(message: string): void {
-  Alert.alert('Permission Required', message, [
-    { text: 'Cancel', style: 'cancel' },
-    { text: 'Open Settings', onPress: openAppSettings },
+  Alert.alert(ALERT_MESSAGES.common.permissionRequiredTitle, message, [
+    { text: ALERT_MESSAGES.common.cancelButton, style: 'cancel' },
+    { text: ALERT_MESSAGES.common.openSettingsButton, onPress: openAppSettings },
   ]);
 }
 

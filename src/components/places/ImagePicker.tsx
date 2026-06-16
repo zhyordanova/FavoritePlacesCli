@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 
 import OutlinedButton from '../ui/OutlinedButton';
+import { ALERT_MESSAGES } from '../../constants/alertMessages';
 import { sharedPickerStyles } from '../../constants/sharedStyles';
 import { CAMERA_OPTIONS } from '../../constants/imagePicker';
 import { usePermission } from '../../hooks/usePermission';
@@ -29,12 +30,12 @@ export default function ImagePicker({
 }: ImagePickerProps) {
   const { request: requestCameraPermission } = usePermission({
     resource: 'camera',
-    settingsMessage: 'Please enable camera access in Settings to continue.',
+    settingsMessage: ALERT_MESSAGES.imagePicker.cameraSettingsMessage,
     cameraRationale: {
-      title: 'Camera Permission Required',
-      message: 'You need to allow camera access to take a photo.',
-      buttonPositive: 'Allow',
-      buttonNegative: 'Deny',
+      title: ALERT_MESSAGES.imagePicker.cameraRationaleTitle,
+      message: ALERT_MESSAGES.imagePicker.cameraRationaleMessage,
+      buttonPositive: ALERT_MESSAGES.imagePicker.cameraRationaleAllowButton,
+      buttonNegative: ALERT_MESSAGES.imagePicker.cameraRationaleDenyButton,
     },
   });
 
@@ -48,7 +49,10 @@ export default function ImagePicker({
 
     const uri = image.assets[0].uri;
     if (!uri) {
-      Alert.alert('Error', 'Could not read the selected image.');
+      Alert.alert(
+        ALERT_MESSAGES.common.errorTitle,
+        ALERT_MESSAGES.imagePicker.readImageFailed,
+      );
       return;
     }
 
@@ -80,23 +84,21 @@ export default function ImagePicker({
 
     if (image.errorCode) {
       if (image.errorCode === 'permission') {
-        showOpenSettingsAlert(
-          'Please enable camera access in Settings to continue.',
-        );
+        showOpenSettingsAlert(ALERT_MESSAGES.imagePicker.cameraSettingsMessage);
         return;
       }
 
       if (image.errorCode === 'camera_unavailable') {
         Alert.alert(
-          'Camera Unavailable',
-          'Camera is not available on this device. On iOS Simulator, use Pick from Gallery or run the app on a physical iPhone.',
+          ALERT_MESSAGES.imagePicker.cameraUnavailableTitle,
+          ALERT_MESSAGES.imagePicker.cameraUnavailableMessage,
         );
         return;
       }
 
       Alert.alert(
-        'Camera Error',
-        image.errorMessage ?? 'Could not open camera.',
+        ALERT_MESSAGES.imagePicker.cameraErrorTitle,
+        image.errorMessage ?? ALERT_MESSAGES.imagePicker.cameraOpenFailed,
       );
       return;
     }
@@ -109,15 +111,13 @@ export default function ImagePicker({
 
     if (image.errorCode) {
       if (image.errorCode === 'permission') {
-        showOpenSettingsAlert(
-          'Please enable photo library access in Settings to continue.',
-        );
+        showOpenSettingsAlert(ALERT_MESSAGES.imagePicker.gallerySettingsMessage);
         return;
       }
 
       Alert.alert(
-        'Gallery Error',
-        image.errorMessage ?? 'Could not open gallery.',
+        ALERT_MESSAGES.imagePicker.galleryErrorTitle,
+        image.errorMessage ?? ALERT_MESSAGES.imagePicker.galleryOpenFailed,
       );
       return;
     }

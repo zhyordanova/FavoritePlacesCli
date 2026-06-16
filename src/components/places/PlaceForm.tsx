@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 
 import Button from '../ui/Button';
+import { ALERT_MESSAGES } from '../../constants/alertMessages';
 import ImagePicker from './ImagePicker';
 import LocationPicker from './LocationPicker';
 import { Colors } from '../../constants/colors';
@@ -42,8 +43,8 @@ export default function PlaceForm({ onCreatePlace }: PlaceFormProps) {
 
     if (!normalizedTitle || !selectedImage || !pickedLocation) {
       Alert.alert(
-        'Missing Information',
-        'Please enter a title, choose an image, and pick a location.',
+        ALERT_MESSAGES.placeForm.missingInformationTitle,
+        ALERT_MESSAGES.placeForm.missingInformationMessage,
       );
       return;
     }

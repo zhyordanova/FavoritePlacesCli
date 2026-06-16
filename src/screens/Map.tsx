@@ -25,6 +25,7 @@ import MarkerGenerator from '../components/ui/MarkerGenerator';
 import { useMarkerImage } from '../hooks/useMarkerImage';
 import { usePlaceDetails } from '../hooks/usePlaceDetails';
 import { usePickedLocationContext } from '../store/picked-location-context';
+import { ALERT_MESSAGES } from '../constants/alertMessages';
 import { Colors } from '../constants/colors';
 import { Spacing } from '../constants/spacing';
 import { logAppError, showUserErrorAlert } from '../util/errors';
@@ -149,7 +150,7 @@ export default function Map() {
 
   const savePickedLocationHandler = useCallback(() => {
     if (!selectedLocation) {
-      Alert.alert('No location picked!');
+      Alert.alert(ALERT_MESSAGES.mapScreen.noLocationPicked);
       return;
     }
 

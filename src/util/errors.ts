@@ -1,4 +1,5 @@
 import { Alert } from 'react-native';
+import { ALERT_MESSAGES } from '../constants/alertMessages';
 
 export type AppErrorScope =
   | 'app.bootstrap'
@@ -39,7 +40,7 @@ export function logAppError(
 
 export function showUserErrorAlert(
   scope: AppErrorScope,
-  title = 'Error',
+  title: string = ALERT_MESSAGES.errors.defaultAlertTitle,
 ): void {
   Alert.alert(title, getUserErrorMessage(scope));
 }

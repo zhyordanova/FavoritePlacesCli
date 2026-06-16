@@ -84,6 +84,7 @@ Short demo recordings of the app running on both platforms.
 - A hybrid permission model: reusable permission helpers plus a UI-friendly `usePermission` hook
 - Context-based handoff for map-picked locations instead of a module-level singleton store
 - Centralized developer-facing error logging with separate user-facing error messages
+- Centralized alert copy via a shared `ALERT_MESSAGES` constants object
 - Practical mobile UX work:
   - bootstrap initialization
   - loading states
@@ -104,7 +105,7 @@ Short demo recordings of the app running on both platforms.
 ```text
 src/
   components/   # Reusable UI and place-related components
-  constants/    # Shared constants and styles
+  constants/    # Shared constants, alert copy, and styles
   hooks/        # Custom hooks (async state, place details, permissions)
   models/       # Domain models
   screens/      # Application screens
