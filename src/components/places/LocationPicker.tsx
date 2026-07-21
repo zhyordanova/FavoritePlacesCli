@@ -69,10 +69,7 @@ export default function LocationPicker({
             lat: mapPickedLocation.lat,
             lng: mapPickedLocation.lng,
           });
-          showUserErrorAlert(
-            'location.mapPickGeocoding',
-            'Geocoding Failed',
-          );
+          showUserErrorAlert('location.mapPickGeocoding', 'Geocoding Failed');
           return;
         }
 
@@ -108,7 +105,10 @@ export default function LocationPicker({
               text: ALERT_MESSAGES.locationPicker.pickOnMapButton,
               onPress: pickOnMapHandler,
             },
-            { text: ALERT_MESSAGES.common.openSettingsButton, onPress: openAppSettings },
+            {
+              text: ALERT_MESSAGES.common.openSettingsButton,
+              onPress: openAppSettings,
+            },
           ],
         );
         return;

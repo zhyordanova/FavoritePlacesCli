@@ -4,13 +4,7 @@ import {
   launchCamera,
   launchImageLibrary,
 } from 'react-native-image-picker';
-import {
-  Alert,
-  Image,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Alert, Image, StyleSheet, Text, View } from 'react-native';
 
 import OutlinedButton from '../ui/OutlinedButton';
 import { ALERT_MESSAGES } from '../../constants/alertMessages';
@@ -111,7 +105,9 @@ export default function ImagePicker({
 
     if (image.errorCode) {
       if (image.errorCode === 'permission') {
-        showOpenSettingsAlert(ALERT_MESSAGES.imagePicker.gallerySettingsMessage);
+        showOpenSettingsAlert(
+          ALERT_MESSAGES.imagePicker.gallerySettingsMessage,
+        );
         return;
       }
 

@@ -29,10 +29,7 @@ import { ALERT_MESSAGES } from '../constants/alertMessages';
 import { Colors } from '../constants/colors';
 import { Spacing } from '../constants/spacing';
 import { logAppError, showUserErrorAlert } from '../util/errors';
-import {
-  getMapboxUnavailableReason,
-  isMapboxAvailable,
-} from '../util/mapbox';
+import { getMapboxUnavailableReason, isMapboxAvailable } from '../util/mapbox';
 
 const DEFAULT_CENTER: [number, number] = [-122.4324, 37.78825];
 

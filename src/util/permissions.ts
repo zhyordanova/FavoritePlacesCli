@@ -41,7 +41,10 @@ export function openAppSettings(): void {
 export function showOpenSettingsAlert(message: string): void {
   Alert.alert(ALERT_MESSAGES.common.permissionRequiredTitle, message, [
     { text: ALERT_MESSAGES.common.cancelButton, style: 'cancel' },
-    { text: ALERT_MESSAGES.common.openSettingsButton, onPress: openAppSettings },
+    {
+      text: ALERT_MESSAGES.common.openSettingsButton,
+      onPress: openAppSettings,
+    },
   ]);
 }
 
@@ -106,7 +109,8 @@ async function ensureAnyAndroidPermission(
 
   const requestResult = await PermissionsAndroid.requestMultiple(permissions);
   const granted = permissions.some(
-    permission => requestResult[permission] === PermissionsAndroid.RESULTS.GRANTED,
+    permission =>
+      requestResult[permission] === PermissionsAndroid.RESULTS.GRANTED,
   );
 
   if (granted) {
