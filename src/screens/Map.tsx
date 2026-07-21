@@ -156,7 +156,7 @@ export default function Map() {
 
     setPickedMapLocation(selectedLocation);
     navigation.goBack();
-  }, [selectedLocation, navigation]);
+  }, [selectedLocation, navigation, setPickedMapLocation]);
 
   const markerGeneratedHandler = useCallback(
     (uri: string) => {
