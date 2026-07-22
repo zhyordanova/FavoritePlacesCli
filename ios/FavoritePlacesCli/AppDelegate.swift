@@ -29,6 +29,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       launchOptions: launchOptions
     )
 
+    AppCenterReactNative.register()
+    AppCenterReactNativeCrashes.registerWithAutomaticProcessing()
+    AppCenterReactNativeAnalytics.register(withInitiallyEnabled: true)
+    
     return true
   }
 }

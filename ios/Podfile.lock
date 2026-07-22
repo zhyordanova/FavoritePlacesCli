@@ -1,4 +1,19 @@
 PODS:
+  - appcenter (1.5.0):
+    - AppCenterReactNativeShared
+  - appcenter-analytics (1.5.0):
+    - AppCenter/Analytics
+    - AppCenterReactNativeShared
+  - appcenter-crashes (1.5.0):
+    - AppCenter/Crashes
+    - AppCenterReactNativeShared
+  - AppCenter/Analytics (5.0.6):
+    - AppCenter/Core
+  - AppCenter/Core (5.0.6)
+  - AppCenter/Crashes (5.0.6):
+    - AppCenter/Core
+  - AppCenterReactNativeShared (5.0.3):
+    - AppCenter/Core (= 5.0.6)
   - FBLazyVector (0.85.2)
   - hermes-engine (250829098.0.10):
     - hermes-engine/Pre-built (= 250829098.0.10)
@@ -2060,6 +2075,9 @@ PODS:
   - Yoga (0.0.0)
 
 DEPENDENCIES:
+  - appcenter (from `../node_modules/appcenter/ios`)
+  - appcenter-analytics (from `../node_modules/appcenter-analytics/ios`)
+  - appcenter-crashes (from `../node_modules/appcenter-crashes/ios`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
   - "op-sqlite (from `../node_modules/@op-engineering/op-sqlite`)"
@@ -2148,12 +2166,20 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - AppCenter
+    - AppCenterReactNativeShared
     - MapboxCommon
     - MapboxCoreMaps
     - MapboxMaps
     - Turf
 
 EXTERNAL SOURCES:
+  appcenter:
+    :path: "../node_modules/appcenter/ios"
+  appcenter-analytics:
+    :path: "../node_modules/appcenter-analytics/ios"
+  appcenter-crashes:
+    :path: "../node_modules/appcenter-crashes/ios"
   FBLazyVector:
     :path: "../node_modules/react-native/Libraries/FBLazyVector"
   hermes-engine:
@@ -2325,6 +2351,11 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
+  AppCenter: 395cc12b428b8fdf12e9f92294d93a55bac389e4
+  appcenter: 4d55f2a014292a91f2e904a6ef3da756978df38d
+  appcenter-analytics: 143a09323bc68021c9c6f5b645baabd07395b99c
+  appcenter-crashes: 6c5c474746104473b59dbd31b9c3e3f4c341c4b6
+  AppCenterReactNativeShared: 6de0a156fa7cdf7162f35ae2938fa3eeaed8965a
   FBLazyVector: 26fd21c75314e101f280d401e97f27d54f3f7064
   hermes-engine: b7c7a46f9f58db91210a8743ef1e7b060bd5601a
   MapboxCommon: 371fd6db596531464b6fd751ae7daa382fe2da2b
@@ -2414,6 +2445,6 @@ SPEC CHECKSUMS:
   Turf: c9eb11a65d96af58cac523460fd40fec5061b081
   Yoga: df8920a8f8ca99996048f6aea23a529f44992eac
 
-PODFILE CHECKSUM: 3ac52360149982345bb2081be1ca9acfba8fe9e5
+PODFILE CHECKSUM: 676b5b612020b9dfa3d2afb2b22d68efd78bc54b
 
 COCOAPODS: 1.15.2

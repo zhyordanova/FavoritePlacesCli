@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+   AppCenter-Config.plist
+   FavoritePlacesCli
+
+   Created by Zhivka Yordanova on 21.07.26.
+   Copyright (c) 2026 ___ORGANIZATIONNAME___. All rights reserved.
+-->
+<plist version="1.0">
+   <dict>
+      <key>AppSecret</key>
+      <string>f3ce383c-03fb-4d2f-9492-e4a3e8542b4d</string>
+   </dict>
+</plist>
