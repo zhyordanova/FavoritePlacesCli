@@ -17,6 +17,11 @@ end
 target 'FavoritePlacesCli' do
   config = use_native_modules!
 
+  # AppCenter React Native pods are added manually for iOS integration.
+  pod 'appcenter', :path => '../node_modules/appcenter/ios'
+  pod 'appcenter-analytics', :path => '../node_modules/appcenter-analytics/ios'
+  pod 'appcenter-crashes', :path => '../node_modules/appcenter-crashes/ios'
+
   use_react_native!(
     :path => config[:reactNativePath],
     # An absolute path to your application root.
