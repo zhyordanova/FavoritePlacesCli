@@ -3,6 +3,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
+  LogBox,
   StatusBar,
   StyleSheet,
   Text,
@@ -25,6 +27,13 @@ import {
   getMapboxUnavailableReason,
   initializeMapbox,
 } from './src/util/mapbox';
+
+import Crash from 'appcenter-crashes';
+
+// Suppress known animation listener warning from reanimated/maps
+LogBox.ignoreLogs([
+  'Sending `onAnimatedValueUpdate` with no listeners registered',
+]);
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -87,6 +96,30 @@ export default function App() {
     return () => {
       isMounted = false;
     };
+  }, []);
+
+  useEffect(() => {
+    async function checkPreviousSession() {
+      const didCrash = await Crash.hasCrashedInLastSession();
+      if (didCrash) {
+        const crashReport = await Crash.lastSessionCrashReport();
+        console.log('App crashed in the last session:', crashReport);
+
+        Alert.alert(
+          'Oops! Something went wrong',
+          "The app crashed in the last session. We've automatically sent a crash report to our team, and we're working on a fix. Thank you for your patience!",
+          [
+            {
+              text: 'Got it',
+              onPress: () => {},
+              style: 'default',
+            },
+          ],
+        );
+      }
+    }
+
+    checkPreviousSession();
   }, []);
 
   if (bootstrapError) {

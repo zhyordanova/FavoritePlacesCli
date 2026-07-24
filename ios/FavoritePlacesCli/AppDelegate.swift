@@ -2,6 +2,9 @@ import UIKit
 import React
 import React_RCTAppDelegate
 import ReactAppDependencyProvider
+import AppCenter
+import AppCenterAnalytics
+import AppCenterCrashes
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -14,6 +17,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
+    // Initialize App Center BEFORE React Native starts (required for crash reporting)
+    if let appSecret = Bundle.main.object(forInfoDictionaryKey: "AppCenterAppSecret") as? String {
+      AppCenter.start(withAppSecret: appSecret, services: [Analytics.self, Crashes.self])
+    }
+    
     let delegate = ReactNativeDelegate()
     let factory = RCTReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
@@ -29,10 +37,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       launchOptions: launchOptions
     )
 
-    AppCenterReactNative.register()
-    AppCenterReactNativeCrashes.registerWithAutomaticProcessing()
-    AppCenterReactNativeAnalytics.register(withInitiallyEnabled: true)
-    
     return true
   }
 }
