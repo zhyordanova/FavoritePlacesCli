@@ -12,6 +12,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import Analytics from 'appcenter-analytics';
 
 import OutlinedButton from '../ui/OutlinedButton';
 import { ALERT_MESSAGES } from '../../constants/alertMessages';
@@ -114,7 +115,11 @@ export default function LocationPicker({
         return;
       }
 
-      let location: { latitude: number; longitude: number };
+      let location: {
+        latitude: number;
+        longitude: number;
+        accuracy: number | null;
+      };
 
       try {
         location = await new Promise((resolve, reject) => {
@@ -151,6 +156,10 @@ export default function LocationPicker({
         return;
       }
 
+      await Analytics.trackEvent('current_location_obtained', {
+        source: 'gps',
+        accuracy: String(Math.round(location.accuracy ?? 0)),
+      });
       onPickLocation({ ...currentLocation, address });
     } finally {
       setIsLoadingLocation(false);
@@ -166,6 +175,9 @@ export default function LocationPicker({
       return;
     }
 
+    Analytics.trackEvent('location_picker_opened', {
+      source: 'map_picker',
+    });
     navigation.navigate('Map');
   }
 

@@ -2,6 +2,7 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useEffect } from 'react';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import Analytics from 'appcenter-analytics';
 
 import { RootStackParamList } from '../types/navigation';
 
@@ -40,6 +41,15 @@ export default function PlaceDetails() {
     navigation.setOptions({
       title: fetchedPlace ? fetchedPlace.title : 'Place Details',
     });
+
+    if (fetchedPlace) {
+      Analytics.trackEvent('place_details_viewed', {
+        placeTitle: fetchedPlace.title,
+        latitude: String(fetchedPlace.location.lat),
+        longitude: String(fetchedPlace.location.lng),
+        imageAvailable: String(!!fetchedPlace.imageUri),
+      });
+    }
   }, [navigation, fetchedPlace]);
 
   if (isLoading) {

@@ -5,6 +5,7 @@ import {
   launchImageLibrary,
 } from 'react-native-image-picker';
 import { Alert, Image, StyleSheet, Text, View } from 'react-native';
+import Analytics from 'appcenter-analytics';
 
 import OutlinedButton from '../ui/OutlinedButton';
 import { ALERT_MESSAGES } from '../../constants/alertMessages';
@@ -97,6 +98,9 @@ export default function ImagePicker({
       return;
     }
 
+    await Analytics.trackEvent('camera_opened', {
+      cameraType: 'rear',
+    });
     await processImageResult(image, true);
   }
 
@@ -118,6 +122,9 @@ export default function ImagePicker({
       return;
     }
 
+    await Analytics.trackEvent('photo_gallery_opened', {
+      source: 'library',
+    });
     await processImageResult(image, false);
   }
 

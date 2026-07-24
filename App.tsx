@@ -29,6 +29,7 @@ import {
 } from './src/util/mapbox';
 
 import Crash from 'appcenter-crashes';
+import Analytics from 'appcenter-analytics';
 
 // Suppress known animation listener warning from reanimated/maps
 LogBox.ignoreLogs([
@@ -77,6 +78,8 @@ export default function App() {
         if (!isMounted) {
           return;
         }
+
+        await Analytics.trackEvent('app_started');
 
         setIsAppReady(true);
         await BootSplash.hide({ fade: true });
