@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>AppCenterAppSecret</key>
+	<string>f3ce383c-03fb-4d2f-9492-e4a3e8542b4d</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -28,20 +30,21 @@
 	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
-	  <!-- Do not change NSAllowsArbitraryLoads to true, or you will risk app rejection! -->
 		<key>NSAllowsArbitraryLoads</key>
 		<false/>
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We need your location to save favorite places.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>The app uses the camera so you can take a photo of a place.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>The app uses your photo library so you can choose a photo of a place.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We need your location to save favorite places.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>The app saves the photo you take to your photo library.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>The app uses your photo library so you can choose a photo of a place.</string>
+	<key>RCTNewArchEnabled</key>
+	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
