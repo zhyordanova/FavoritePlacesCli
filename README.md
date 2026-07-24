@@ -162,43 +162,61 @@ https://reactnative.dev/docs/set-up-your-environment
 
 ---
 
-## 🔑 Environment Variables
+## � Configuration
 
-Create a `.env` file in the project root:
-
-```env
-MAPBOX_ACCESS_TOKEN=your_mapbox_access_token_here
+### Mapbox
+Create a `.env` file from `.env.example`:
+```bash
+cp .env.example .env
 ```
 
-An `.env.example` file is included in the repository as a template.
+Add your Mapbox token from https://mapbox.com:
+```env
+MAPBOX_ACCESS_TOKEN=your_mapbox_token_here
+```
 
-Get your token from [Mapbox](https://mapbox.com).
+### App Center Crash Reporting
+Get your app secrets from https://appcenter.ms/settings/keys
 
-Without this token, the app still launches, but map rendering, map picking, static previews, and reverse geocoding are intentionally unavailable.
+**Android:** Edit `android/app/src/main/res/values/strings.xml`:
+```xml
+<string name="appcenter_app_secret">your_android_secret_here</string>
+```
+
+**iOS:** Edit `ios/FavoritePlacesCli/Info.plist`:
+```xml
+<key>AppCenterAppSecret</key>
+<string>your_ios_secret_here</string>
+```
+
+Both config files are **git-ignored** - your secrets won't be committed.
 
 ---
 
 ## Installation
 
-Install dependencies:
-
+1. **Install Node dependencies:**
 ```sh
 npm install
 ```
 
-### iOS only
+2. **Configure Mapbox (optional):**
+```bash
+cp .env.example .env
+# Add your Mapbox token to .env
+```
 
-Install Ruby gems if needed:
-
+3. **iOS only:**
 ```sh
 bundle install
+cd ios && pod install && cd ..
 ```
 
-Install CocoaPods dependencies:
+4. **Configure App Center Secrets (optional):**
+   - Android: `android/app/src/main/res/values/strings.xml`
+   - iOS: `ios/FavoritePlacesCli/Info.plist`
 
-```sh
-bundle exec pod install --project-directory=ios
-```
+See [Configuration](#-configuration) section above for details.
 
 ---
 

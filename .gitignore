@@ -27,6 +27,7 @@ android/app/build/
 android/app/.cxx/
 android/build/
 android/local.properties
+android/app/src/main/res/values/strings.xml
 *.keystore
 *.jks
 
@@ -35,6 +36,7 @@ ios/Pods/
 ios/build/
 ios/DerivedData/
 ios/tmp.xcconfig
+ios/AppCenter-Config.plist
 *.xcworkspace
 !ios/*.xcworkspace/contents.xcworkspacedata
 *.xcuserstate

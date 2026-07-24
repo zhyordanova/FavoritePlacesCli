@@ -1,3 +1,3 @@
-#import <appcenter/AppCenterReactNative.h>
-#import <appcenter-analytics/AppCenterReactNativeAnalytics.h>
-#import <appcenter-crashes/AppCenterReactNativeCrashes.h>
+#import <AppCenter/AppCenter.h>
+#import <AppCenterAnalytics/AppCenterAnalytics.h>
+#import <AppCenterCrashes/AppCenterCrashes.h>
