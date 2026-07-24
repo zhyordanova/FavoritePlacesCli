@@ -104,10 +104,10 @@ export default function App() {
       if (didCrash) {
         const crashReport = await Crash.lastSessionCrashReport();
         console.log('App crashed in the last session:', crashReport);
-        
+
         Alert.alert(
           'Oops! Something went wrong',
-          'The app crashed in the last session. We\'ve automatically sent a crash report to our team, and we\'re working on a fix. Thank you for your patience!',
+          "The app crashed in the last session. We've automatically sent a crash report to our team, and we're working on a fix. Thank you for your patience!",
           [
             {
               text: 'Got it',
@@ -201,4 +201,3 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-
