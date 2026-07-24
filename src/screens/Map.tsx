@@ -16,6 +16,7 @@ import {
   View,
 } from 'react-native';
 import Mapbox, { type ScreenPointPayload } from '@rnmapbox/maps';
+import Analytics from 'appcenter-analytics';
 
 import { RootStackParamList } from '../types/navigation';
 
@@ -54,7 +55,13 @@ export default function Map() {
   const { lat, lng, placeId } = route.params ?? {};
 
   const initialLocation = useMemo(
-    () => (lat && lng ? { lat: +lat, lng: +lng } : undefined),
+    () =>
+      lat && lng
+        ? {
+            lat: typeof lat === 'string' ? +lat : lat,
+            lng: typeof lng === 'string' ? +lng : lng,
+          }
+        : undefined,
     [lat, lng],
   );
 
@@ -82,6 +89,11 @@ export default function Map() {
 
     // Wait 1 second for map to fully render before hiding loader
     readyDelayTimerRef.current = setTimeout(() => {
+      const context = placeId ? 'view_place' : 'add_place';
+      Analytics.trackEvent('map_opened', {
+        context,
+        initialZoom: 'default',
+      });
       setIsMapLoaded(true);
       setHasMapLoadTimedOut(false);
 
@@ -92,7 +104,7 @@ export default function Map() {
 
       readyDelayTimerRef.current = null;
     }, 1000);
-  }, []);
+  }, [placeId]);
 
   useEffect(() => {
     if (!markerPlace?.imageUri) {

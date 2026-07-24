@@ -6,8 +6,8 @@ export type RootStackParamList = {
   AddPlace: undefined;
   Map:
     | {
-        lat?: string;
-        lng?: string;
+        lat?: string | number;
+        lng?: string | number;
         placeId?: string;
       }
     | undefined;
